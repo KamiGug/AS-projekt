@@ -1,0 +1,27 @@
+services:
+  db:
+    image: mysql:8
+    restart: unless-stopped
+    ports:
+     - "33068:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: Qk2P30B8dRn73JDAwf6EW3KQw7pgWs4G
+      MYSQL_USER: kurniker
+      MYSQL_PASSWORD: 7OUvcg4v5b6SY1t7KaKNSlXiJaNN42puDKehkHdEt2zeLmxv
+      MYSQL_DATABASE: kurnik-clone-table
+    volumes:
+      - type: bind
+        source: ~/workspace/my/db
+        target: /var/lib/mysql
+
+  # web-1:
+  #   image: php:8.3-apache-bookworm
+  #   restart: unless-stopped
+  #   ports:
+  #   - "8080:80"
+  #   volumes:
+  #    - type: bind
+  #      source: .
+  #      target: /var/www/html
+  #   depends_on:
+  #    - db
