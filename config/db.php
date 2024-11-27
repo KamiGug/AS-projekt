@@ -21,7 +21,7 @@ $db = [
 ];
 
 if (defined('YII_ENV')) {
-    switch (YII_ENV) {
+    switch (strtoupper(YII_ENV)) {
         case 'PROD': 
             $db = ArrayHelper::merge($db, require(__DIR__ . '/db/prod.php'));
             break;
