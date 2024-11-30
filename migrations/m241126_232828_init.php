@@ -127,7 +127,7 @@ class m241126_232828_init extends Migration
             'fk_chat_participant_id_chat',
             'ChatParticipant',
             'id_chat',
-            'User',
+            'Chat',
             'id',
             'CASCADE',
             'CASCADE'
@@ -200,6 +200,7 @@ class m241126_232828_init extends Migration
             'id_chat' => $this->integer(),
             'game_history' => $this->text()->notNull(),
             'finished_at' => $this->dateTime()->defaultValue(null),
+            'current_gamestate' => $this->text(),
             'created_by' => $this->integer(),
             'created_at' => $this->dateTime()->defaultExpression(new \yii\db\Expression('CURRENT_TIMESTAMP')),
         ]);
@@ -236,6 +237,7 @@ class m241126_232828_init extends Migration
             'id' => $this->primaryKey(),
             'id_user' => $this->integer()->notNull(),
             'id_room' => $this->integer()->notNull(),
+            'left_at' => $this->dateTime(),
             'created_at' => $this->dateTime()->defaultExpression(new \yii\db\Expression('CURRENT_TIMESTAMP')),
         ]);
         $this->addForeignKey(
