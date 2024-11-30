@@ -3,7 +3,7 @@
 namespace app\controllers;
 
 use Yii;
-use yii\filters\AccessControl;
+use app\models\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
 use yii\filters\VerbFilter;
@@ -15,24 +15,37 @@ class SiteController extends Controller
     /**
      * {@inheritdoc}
      */
+
+    protected $allUsersActions = [];
+    protected $guestActions = [];
+    protected $allowedRoles = ['@'];
     public function behaviors()
     {
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['logout'],
                 'rules' => [
+                    //allow all users use actions that are available to all users
                     [
-                        'actions' => ['logout'],
+                        'actions' => $this->allUsersActions,
                         'allow' => true,
-                        'roles' => ['@'],
                     ],
-                ],
-            ],
-            'verbs' => [
-                'class' => VerbFilter::class,
-                'actions' => [
-                    'logout' => ['post'],
+                    //allow guests to use guest only actions
+                    [
+                        'actions' => $this->guestActions,
+                        'allow' => true,
+                        'roles' => ['?'],
+                    ],
+                    //forbid guests to use any other actions
+                    [
+                        'allow' => false,
+                        'roles' => ['?'],
+                    ],
+                    //allow whitelisted users to use this controller
+                    [
+                        'allow' => true,
+                        'roles' => $this->allowedRoles,
+                    ]
                 ],
             ],
         ];

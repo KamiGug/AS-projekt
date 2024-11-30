@@ -132,7 +132,7 @@ class m241126_232828_init extends Migration
             'CASCADE',
             'CASCADE'
         );
-        
+
         //Message table
         $this->createTable('Message', [
             'id' => $this->primaryKey(),
@@ -159,11 +159,11 @@ class m241126_232828_init extends Migration
             'CASCADE',
             'CASCADE'
         );
-        
+
         //FlaggedMessage table
         $this->createTable('FlaggedMessage', [
             'id' => $this->primaryKey(),
-            'id_message' => $this->integer(),            
+            'id_message' => $this->integer(),
 			'flagged_by' => $this->integer(),
 			'comment' =>  $this->text()->notNull(),
             'created_at' => $this->dateTime()->defaultExpression(new \yii\db\Expression('CURRENT_TIMESTAMP')),
@@ -186,7 +186,7 @@ class m241126_232828_init extends Migration
             'CASCADE',
             'CASCADE'
         );
-		
+
         //GameType table
         $this->createTable('GameType', [
             'id' => $this->primaryKey(),
@@ -199,6 +199,7 @@ class m241126_232828_init extends Migration
             'id_game_type' => $this->integer()->notNull(),
             'id_chat' => $this->integer(),
             'game_history' => $this->text()->notNull(),
+            'finished_at' => $this->dateTime()->defaultValue(null),
             'created_by' => $this->integer(),
             'created_at' => $this->dateTime()->defaultExpression(new \yii\db\Expression('CURRENT_TIMESTAMP')),
         ]);
@@ -229,7 +230,7 @@ class m241126_232828_init extends Migration
             'SET NULL',
             'CASCADE'
         );
-        
+
         //User_Room table
         $this->createTable('User_Room', [
             'id' => $this->primaryKey(),
@@ -284,7 +285,7 @@ class m241126_232828_init extends Migration
         //drop ChatParticipant
         $this->dropForeignKey('fk_chat_participant_id_user', 'ChatParticipant');
         $this->dropForeignKey('fk_chat_participant_id_chat', 'ChatParticipant');
-        $this->dropTable('ChatParticipant');        
+        $this->dropTable('ChatParticipant');
         //drop Chat
         $this->dropForeignKey('fk_chat_created_by', 'Chat');
         $this->dropTable('Chat');
