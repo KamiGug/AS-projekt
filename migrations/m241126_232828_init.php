@@ -163,7 +163,9 @@ class m241126_232828_init extends Migration
         //FlaggedMessage table
         $this->createTable('FlaggedMessage', [
             'id' => $this->primaryKey(),
-            'id_message' => $this->integer(),
+            'id_message' => $this->integer(),            
+			'flagged_by' => $this->integer(),
+			'comment' =>  $this->text()->notNull(),
             'created_at' => $this->dateTime()->defaultExpression(new \yii\db\Expression('CURRENT_TIMESTAMP')),
         ]);
         $this->addForeignKey(
@@ -175,41 +177,20 @@ class m241126_232828_init extends Migration
             'CASCADE',
             'CASCADE'
         );
-
-
-        //User_FlaggedMessage table
-        $this->createTable('User_FlaggedMessage', [
-            'id' => $this->primaryKey(),
-            'id_flagged' => $this->integer()->notNull(),
-            'id_user' => $this->integer(),
-            'comment' => $this->text()->notNull(),
-            'created_at' => $this->dateTime()->defaultExpression(new \yii\db\Expression('CURRENT_TIMESTAMP')),
-        ]);
-        $this->addForeignKey(
-            'fk_user_flagged_message_id_flagged',
-            'User_FlaggedMessage',
-            'id_flagged',
+		$this->addForeignKey(
+            'fk_flagged_message_flagged_by',
             'FlaggedMessage',
+            'flagged_by',
+            'User',
             'id',
             'CASCADE',
             'CASCADE'
         );
-        $this->addForeignKey(
-            'fk_user_flagged_message_id_user',
-            'User_FlaggedMessage',
-            'id_user',
-            'User',
-            'id',
-            'SET NULL',
-            'CASCADE'
-        );
-
+		
         //GameType table
         $this->createTable('GameType', [
             'id' => $this->primaryKey(),
             'name' => $this->string(30)->notNull(),
-            'max_players' =>$this->tinyInteger()->unsigned()->notNull(),
-
         ]);
 
         //Room table
@@ -292,12 +273,9 @@ class m241126_232828_init extends Migration
         $this->dropTable('Room');
         //drop GameType
         $this->dropTable('GameType');
-        //drop User_FlaggedMessage
-        $this->dropForeignKey('fk_user_flagged_message_id_flagged', 'User_FlaggedMessage');
-        $this->dropForeignKey('fk_user_flagged_message_id_user', 'User_FlaggedMessage');
-        $this->dropTable('User_FlaggedMessage');
         //drop FlaggedMessage
         $this->dropForeignKey('fk_flagged_message_id_message', 'FlaggedMessage');
+		$this->dropForeignKey('fk_flagged_message_flagged_by', 'FlaggedMessage');
         $this->dropTable('FlaggedMessage');
         //drop Message
         $this->dropForeignKey('fk_message_id_chat', 'Message');
