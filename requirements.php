@@ -79,13 +79,13 @@ $requirements = array(
         'condition' => extension_loaded('pdo'),
         'by' => 'All DB-related classes',
     ),
-    array(
-        'name' => 'PDO SQLite extension',
-        'mandatory' => false,
-        'condition' => extension_loaded('pdo_sqlite'),
-        'by' => 'All DB-related classes',
-        'memo' => 'Required for SQLite database.',
-    ),
+//    array(
+//        'name' => 'PDO SQLite extension',
+//        'mandatory' => false,
+//        'condition' => extension_loaded('pdo_sqlite'),
+//        'by' => 'All DB-related classes',
+//        'memo' => 'Required for SQLite database.',
+//    ),
     array(
         'name' => 'PDO MySQL extension',
         'mandatory' => false,
@@ -93,13 +93,13 @@ $requirements = array(
         'by' => 'All DB-related classes',
         'memo' => 'Required for MySQL database.',
     ),
-    array(
-        'name' => 'PDO PostgreSQL extension',
-        'mandatory' => false,
-        'condition' => extension_loaded('pdo_pgsql'),
-        'by' => 'All DB-related classes',
-        'memo' => 'Required for PostgreSQL database.',
-    ),
+//    array(
+//        'name' => 'PDO PostgreSQL extension',
+//        'mandatory' => false,
+//        'condition' => extension_loaded('pdo_pgsql'),
+//        'by' => 'All DB-related classes',
+//        'memo' => 'Required for PostgreSQL database.',
+//    ),
     // Cache :
     array(
         'name' => 'Memcache extension',
