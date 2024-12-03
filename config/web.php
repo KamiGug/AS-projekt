@@ -11,14 +11,22 @@ $modules = [
     'chat' => ['class' => 'app\modules\chat\Module'],
 
     //profile, edit profile, view game history
-    'user' => ['class' => 'app\models\user\Module'],
+    'user' => ['class' => 'app\modules\user\Module'],
 ];
 
 $pathingRules = [
     '/' => 'main/default/index',
-    '/login' => 'main/authentication/login',
-    '/logout' => 'main/authentication/logout',
-    '/signup' => 'main/authentication/signup',
+    '/login' => 'user/authentication/login',
+    '/logout' => 'user/authentication/logout',
+    '/signup' => 'user/authentication/signup',
+    '/profile/<id:\d+>' => 'user/management/profile',
+    '/profile/edit/<id:\d+>' => 'user/management/editProfile',
+
+
+    //fallback simple routing
+    '<action:\w+>' => 'main/default/<action>',
+    '<module:\w+>/<controller:\w+>' => '<module/<controller>/index',
+    '<module:\w+>/<controller:\w+>/<action:\w+>' => '<module/<controller>/<action>',
 ];
 
 $params = require __DIR__ . '/params.php';
@@ -48,7 +56,7 @@ $config = [
             'rules' => $pathingRules,
         ],
         'user' => [
-            'identityClass' => 'app\models\user\User',
+            'identityClass' => 'app\models\database\User',
             'enableAutoLogin' => true,
             'loginUrl' => '/login'
         ],
