@@ -12,7 +12,7 @@ use Yii;
  * @property int $id_chat
  * @property string|null $created_at
  *
- * @property User $chat
+ * @property Chat $chat
  * @property User $user
  */
 class ChatParticipant extends \yii\db\ActiveRecord
@@ -34,7 +34,7 @@ class ChatParticipant extends \yii\db\ActiveRecord
             [['id_user', 'id_chat'], 'required'],
             [['id_user', 'id_chat'], 'integer'],
             [['created_at'], 'safe'],
-            [['id_chat'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['id_chat' => 'id']],
+            [['id_chat'], 'exist', 'skipOnError' => true, 'targetClass' => Chat::class, 'targetAttribute' => ['id_chat' => 'id']],
             [['id_user'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['id_user' => 'id']],
         ];
     }
@@ -59,7 +59,7 @@ class ChatParticipant extends \yii\db\ActiveRecord
      */
     public function getChat()
     {
-        return $this->hasOne(User::class, ['id' => 'id_chat']);
+        return $this->hasOne(Chat::class, ['id' => 'id_chat']);
     }
 
     /**

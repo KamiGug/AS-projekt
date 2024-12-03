@@ -19,15 +19,14 @@ use Yii;
  * @property int|null $created_by
  *
  * @property ChatParticipant[] $chatParticipants
- * @property ChatParticipant[] $chatParticipants0
  * @property Chat[] $chats
  * @property User $createdBy
+ * @property FlaggedMessage[] $flaggedMessages
  * @property Message[] $messages
  * @property User $modifiedBy
  * @property Role $role
  * @property Role[] $roles
  * @property Room[] $rooms
- * @property UserFlaggedMessage[] $userFlaggedMessages
  * @property UserRoom[] $userRooms
  * @property User[] $users
  * @property User[] $users0
@@ -87,16 +86,6 @@ class User extends \yii\db\ActiveRecord
      */
     public function getChatParticipants()
     {
-        return $this->hasMany(ChatParticipant::class, ['id_chat' => 'id']);
-    }
-
-    /**
-     * Gets query for [[ChatParticipants0]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getChatParticipants0()
-    {
         return $this->hasMany(ChatParticipant::class, ['id_user' => 'id']);
     }
 
@@ -118,6 +107,16 @@ class User extends \yii\db\ActiveRecord
     public function getCreatedBy()
     {
         return $this->hasOne(User::class, ['id' => 'created_by']);
+    }
+
+    /**
+     * Gets query for [[FlaggedMessages]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFlaggedMessages()
+    {
+        return $this->hasMany(FlaggedMessage::class, ['flagged_by' => 'id']);
     }
 
     /**
@@ -168,16 +167,6 @@ class User extends \yii\db\ActiveRecord
     public function getRooms()
     {
         return $this->hasMany(Room::class, ['created_by' => 'id']);
-    }
-
-    /**
-     * Gets query for [[UserFlaggedMessages]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUserFlaggedMessages()
-    {
-        return $this->hasMany(UserFlaggedMessage::class, ['id_user' => 'id']);
     }
 
     /**

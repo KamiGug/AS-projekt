@@ -11,6 +11,7 @@ use Yii;
  * @property string|null $created_at
  * @property int|null $created_by
  *
+ * @property ChatParticipant[] $chatParticipants
  * @property User $createdBy
  * @property Message[] $messages
  * @property Room[] $rooms
@@ -47,6 +48,16 @@ class Chat extends \yii\db\ActiveRecord
             'created_at' => Yii::t('app', 'Created At'),
             'created_by' => Yii::t('app', 'Created By'),
         ];
+    }
+
+    /**
+     * Gets query for [[ChatParticipants]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getChatParticipants()
+    {
+        return $this->hasMany(ChatParticipant::class, ['id_chat' => 'id']);
     }
 
     /**

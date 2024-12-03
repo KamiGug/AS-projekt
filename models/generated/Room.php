@@ -11,6 +11,8 @@ use Yii;
  * @property int $id_game_type
  * @property int|null $id_chat
  * @property string $game_history
+ * @property string|null $finished_at
+ * @property string|null $current_gamestate
  * @property int|null $created_by
  * @property string|null $created_at
  *
@@ -37,8 +39,8 @@ class Room extends \yii\db\ActiveRecord
         return [
             [['id_game_type', 'game_history'], 'required'],
             [['id_game_type', 'id_chat', 'created_by'], 'integer'],
-            [['game_history'], 'string'],
-            [['created_at'], 'safe'],
+            [['game_history', 'current_gamestate'], 'string'],
+            [['finished_at', 'created_at'], 'safe'],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['created_by' => 'id']],
             [['id_chat'], 'exist', 'skipOnError' => true, 'targetClass' => Chat::class, 'targetAttribute' => ['id_chat' => 'id']],
             [['id_game_type'], 'exist', 'skipOnError' => true, 'targetClass' => GameType::class, 'targetAttribute' => ['id_game_type' => 'id']],
@@ -55,6 +57,8 @@ class Room extends \yii\db\ActiveRecord
             'id_game_type' => Yii::t('app', 'Id Game Type'),
             'id_chat' => Yii::t('app', 'Id Chat'),
             'game_history' => Yii::t('app', 'Game History'),
+            'finished_at' => Yii::t('app', 'Finished At'),
+            'current_gamestate' => Yii::t('app', 'Current Gamestate'),
             'created_by' => Yii::t('app', 'Created By'),
             'created_at' => Yii::t('app', 'Created At'),
         ];

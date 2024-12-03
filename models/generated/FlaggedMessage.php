@@ -9,10 +9,12 @@ use Yii;
  *
  * @property int $id
  * @property int|null $id_message
+ * @property int|null $flagged_by
+ * @property string $comment
  * @property string|null $created_at
  *
+ * @property User $flaggedBy
  * @property Message $message
- * @property UserFlaggedMessage[] $userFlaggedMessages
  */
 class FlaggedMessage extends \yii\db\ActiveRecord
 {
@@ -30,8 +32,11 @@ class FlaggedMessage extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id_message'], 'integer'],
+            [['id_message', 'flagged_by'], 'integer'],
+            [['comment'], 'required'],
+            [['comment'], 'string'],
             [['created_at'], 'safe'],
+            [['flagged_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['flagged_by' => 'id']],
             [['id_message'], 'exist', 'skipOnError' => true, 'targetClass' => Message::class, 'targetAttribute' => ['id_message' => 'id']],
         ];
     }
@@ -44,8 +49,20 @@ class FlaggedMessage extends \yii\db\ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'id_message' => Yii::t('app', 'Id Message'),
+            'flagged_by' => Yii::t('app', 'Flagged By'),
+            'comment' => Yii::t('app', 'Comment'),
             'created_at' => Yii::t('app', 'Created At'),
         ];
+    }
+
+    /**
+     * Gets query for [[FlaggedBy]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFlaggedBy()
+    {
+        return $this->hasOne(User::class, ['id' => 'flagged_by']);
     }
 
     /**
@@ -56,15 +73,5 @@ class FlaggedMessage extends \yii\db\ActiveRecord
     public function getMessage()
     {
         return $this->hasOne(Message::class, ['id' => 'id_message']);
-    }
-
-    /**
-     * Gets query for [[UserFlaggedMessages]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUserFlaggedMessages()
-    {
-        return $this->hasMany(UserFlaggedMessage::class, ['id_flagged' => 'id']);
     }
 }

@@ -1,9 +1,9 @@
 <?php
 
-namespace app\models\user;
+namespace app\models\database;
 
-use yii\web\IdentityInterface;
 use Yii;
+use yii\web\IdentityInterface;
 
 class User extends \app\models\generated\User implements IdentityInterface
 {
@@ -12,7 +12,7 @@ class User extends \app\models\generated\User implements IdentityInterface
         return array_merge(
             parent::rules(),
             [
-                ['email', 'email', 'message' => Yii::t('app', 'Invalid email')] 
+                ['email', 'email', 'message' => Yii::t('app', 'Invalid email')]
             ]
         );
     }
@@ -61,7 +61,7 @@ class User extends \app\models\generated\User implements IdentityInterface
 
     public function validatePassword($password) : bool {
         return Yii::$app->getSecurity()->validatePassword(
-            $password, 
+            $password,
             $this->password
         );
     }

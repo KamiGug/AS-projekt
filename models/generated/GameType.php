@@ -9,7 +9,6 @@ use Yii;
  *
  * @property int $id
  * @property string $name
- * @property int $max_players
  *
  * @property Room[] $rooms
  */
@@ -29,8 +28,7 @@ class GameType extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'max_players'], 'required'],
-            [['max_players'], 'integer'],
+            [['name'], 'required'],
             [['name'], 'string', 'max' => 30],
         ];
     }
@@ -43,7 +41,6 @@ class GameType extends \yii\db\ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'name' => Yii::t('app', 'Name'),
-            'max_players' => Yii::t('app', 'Max Players'),
         ];
     }
 
