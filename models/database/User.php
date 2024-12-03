@@ -7,12 +7,33 @@ use yii\web\IdentityInterface;
 
 class User extends \app\models\generated\User implements IdentityInterface
 {
+    const SCENARIO_LOGIN = 'login';
+    const SCENARIO_SIGNUP = 'signup';
+    const SCENARIO_EDIT_SELF = 'self-edit';
+    const SCENARIO_EDIT_ADMIN = 'admin-edit';
+    const SCENARIO_PROFILE_SHOW = 'show-profile';
+
     public function rules()
     {
         return array_merge(
             parent::rules(),
             [
-                ['email', 'email', 'message' => Yii::t('app', 'Invalid email')]
+                [['username', 'password', 'email', 'visible_name'], 'required'],
+                ['email', 'email', 'message' => Yii::t('app', 'Invalid email')],
+            ]
+        );
+    }
+
+    public function scenarios()
+    {
+        return array_merge(
+            parent::scenarios(),
+            [
+                self::SCENARIO_LOGIN => ['username', 'password'],
+                self::SCENARIO_SIGNUP => ['username', 'password', 'email', 'visible_name'],
+                self::SCENARIO_EDIT_SELF => ['username', 'password', 'visible_name'],
+                self::SCENARIO_EDIT_ADMIN => ['username', 'password', 'email', 'visible_name', 'id_role'],
+                self::SCENARIO_PROFILE_SHOW => ['visible_name'],
             ]
         );
     }
@@ -26,7 +47,6 @@ class User extends \app\models\generated\User implements IdentityInterface
                 'email' => Yii::t('app', 'Email'),
                 'password' => Yii::t('app', 'Password'),
                 'visible_name' => Yii::t('app', 'Nickname'),
-                'content' => Yii::t('app', 'Content'),
             ]
         );
     }
