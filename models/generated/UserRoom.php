@@ -10,6 +10,7 @@ use Yii;
  * @property int $id
  * @property int $id_user
  * @property int $id_room
+ * @property string|null $left_at
  * @property string|null $created_at
  *
  * @property Room $room
@@ -33,7 +34,7 @@ class UserRoom extends \yii\db\ActiveRecord
         return [
             [['id_user', 'id_room'], 'required'],
             [['id_user', 'id_room'], 'integer'],
-            [['created_at'], 'safe'],
+            [['left_at', 'created_at'], 'safe'],
             [['id_room'], 'exist', 'skipOnError' => true, 'targetClass' => Room::class, 'targetAttribute' => ['id_room' => 'id']],
             [['id_user'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['id_user' => 'id']],
         ];
@@ -48,6 +49,7 @@ class UserRoom extends \yii\db\ActiveRecord
             'id' => Yii::t('app', 'ID'),
             'id_user' => Yii::t('app', 'Id User'),
             'id_room' => Yii::t('app', 'Id Room'),
+            'left_at' => Yii::t('app', 'Left At'),
             'created_at' => Yii::t('app', 'Created At'),
         ];
     }
