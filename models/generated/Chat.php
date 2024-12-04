@@ -44,9 +44,9 @@ class Chat extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('app', 'ID'),
-            'created_at' => Yii::t('app', 'Created At'),
-            'created_by' => Yii::t('app', 'Created By'),
+            'id' => 'ID',
+            'created_at' => 'Created At',
+            'created_by' => 'Created By',
         ];
     }
 

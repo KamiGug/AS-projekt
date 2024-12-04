@@ -47,11 +47,11 @@ class FlaggedMessage extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('app', 'ID'),
-            'id_message' => Yii::t('app', 'Id Message'),
-            'flagged_by' => Yii::t('app', 'Flagged By'),
-            'comment' => Yii::t('app', 'Comment'),
-            'created_at' => Yii::t('app', 'Created At'),
+            'id' => 'ID',
+            'id_message' => 'Id Message',
+            'flagged_by' => 'Flagged By',
+            'comment' => 'Comment',
+            'created_at' => 'Created At',
         ];
     }
 

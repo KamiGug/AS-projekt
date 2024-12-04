@@ -48,11 +48,11 @@ class Message extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('app', 'ID'),
-            'id_chat' => Yii::t('app', 'Id Chat'),
-            'created_by' => Yii::t('app', 'Created By'),
-            'created_at' => Yii::t('app', 'Created At'),
-            'contents' => Yii::t('app', 'Contents'),
+            'id' => 'ID',
+            'id_chat' => 'Id Chat',
+            'created_by' => 'Created By',
+            'created_at' => 'Created At',
+            'contents' => 'Contents',
         ];
     }
 

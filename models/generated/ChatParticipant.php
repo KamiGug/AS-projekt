@@ -45,10 +45,10 @@ class ChatParticipant extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('app', 'ID'),
-            'id_user' => Yii::t('app', 'Id User'),
-            'id_chat' => Yii::t('app', 'Id Chat'),
-            'created_at' => Yii::t('app', 'Created At'),
+            'id' => 'ID',
+            'id_user' => 'Id User',
+            'id_chat' => 'Id Chat',
+            'created_at' => 'Created At',
         ];
     }
 
