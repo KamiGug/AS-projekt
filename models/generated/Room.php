@@ -53,14 +53,14 @@ class Room extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('app', 'ID'),
-            'id_game_type' => Yii::t('app', 'Id Game Type'),
-            'id_chat' => Yii::t('app', 'Id Chat'),
-            'game_history' => Yii::t('app', 'Game History'),
-            'finished_at' => Yii::t('app', 'Finished At'),
-            'current_gamestate' => Yii::t('app', 'Current Gamestate'),
-            'created_by' => Yii::t('app', 'Created By'),
-            'created_at' => Yii::t('app', 'Created At'),
+            'id' => 'ID',
+            'id_game_type' => 'Id Game Type',
+            'id_chat' => 'Id Chat',
+            'game_history' => 'Game History',
+            'finished_at' => 'Finished At',
+            'current_gamestate' => 'Current Gamestate',
+            'created_by' => 'Created By',
+            'created_at' => 'Created At',
         ];
     }
 

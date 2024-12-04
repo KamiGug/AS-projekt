@@ -46,11 +46,11 @@ class UserRoom extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('app', 'ID'),
-            'id_user' => Yii::t('app', 'Id User'),
-            'id_room' => Yii::t('app', 'Id Room'),
-            'left_at' => Yii::t('app', 'Left At'),
-            'created_at' => Yii::t('app', 'Created At'),
+            'id' => 'ID',
+            'id_user' => 'Id User',
+            'id_room' => 'Id Room',
+            'left_at' => 'Left At',
+            'created_at' => 'Created At',
         ];
     }
 

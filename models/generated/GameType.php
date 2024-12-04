@@ -39,8 +39,8 @@ class GameType extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('app', 'ID'),
-            'name' => Yii::t('app', 'Name'),
+            'id' => 'ID',
+            'name' => 'Name',
         ];
     }
 
