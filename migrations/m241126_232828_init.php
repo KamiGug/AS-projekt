@@ -15,11 +15,11 @@ class m241126_232828_init extends Migration
         //User table
         $this->createTable('User', [
             'id' => $this->primaryKey(),
-            'id_role' => $this->integer(),
-            'username' => $this->string(40)->notNull()->unique(),
+            'username' => $this->string(40)->unique(),
             'email' => $this->string(40),
-            'password' => $this->string(150)->notNull(),
-            'visible_name' => $this->string(30)->notNull(),
+            'password' => $this->string(150),
+            'visible_name' => $this->string(30),
+            'role' => $this->string(40)->notNull(),
             'modified_at' => $this->dateTime()->defaultExpression(new \yii\db\Expression('CURRENT_TIMESTAMP')),
             'modified_by' => $this->integer(),
             'created_at' => $this->dateTime()->defaultExpression(new \yii\db\Expression('CURRENT_TIMESTAMP')),
@@ -52,44 +52,6 @@ class m241126_232828_init extends Migration
                 SET NEW.modified_at = CURRENT_TIMESTAMP;
             END;
         ");
-
-        //Role table
-        $this->createTable('Role', [
-            'id' => $this->primaryKey(),
-            'name' => $this->string(20)->notNull(),
-            'deactivated_at' => $this->dateTime()->defaultValue(null),
-            'created_at' => $this->dateTime()->defaultExpression(new \yii\db\Expression('CURRENT_TIMESTAMP')),
-            'modified_at' => $this->dateTime()->defaultExpression(new \yii\db\Expression('CURRENT_TIMESTAMP')),
-            'modified_by' => $this->integer(),
-        ]);
-        $this->addForeignKey(
-            'fk_role_modified_by',
-            'Role',
-            'modified_by',
-            'User',
-            'id',
-            'SET NULL',
-            'CASCADE'
-        );
-        // add a trigger for updating modified_at
-        $this->execute("
-            CREATE TRIGGER trigger_update_role_modified_at
-            BEFORE UPDATE ON Role
-            FOR EACH ROW
-            BEGIN
-                SET NEW.modified_at = CURRENT_TIMESTAMP;
-            END;
-        ");
-
-        $this->addForeignKey(
-            'fk_user_id_role',
-            'User',
-            'id_role',
-            'Role',
-            'id',
-            'SET NULL',
-            'CASCADE'
-        );
 
         //Chat table
         $this->createTable('Chat', [

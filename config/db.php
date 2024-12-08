@@ -22,7 +22,7 @@ $db = [
 
 if (defined('YII_ENV')) {
     switch (strtoupper(YII_ENV)) {
-        case 'PROD': 
+        case 'PROD':
             $db = ArrayHelper::merge($db, require(__DIR__ . '/db/prod.php'));
             break;
         case 'DEV':

@@ -8,11 +8,11 @@ use Yii;
  * This is the model class for table "User".
  *
  * @property int $id
- * @property int|null $id_role
- * @property string $username
+ * @property string|null $username
  * @property string|null $email
- * @property string $password
- * @property string $visible_name
+ * @property string|null $password
+ * @property string|null $visible_name
+ * @property string $role
  * @property string|null $modified_at
  * @property int|null $modified_by
  * @property string|null $created_at
@@ -24,8 +24,6 @@ use Yii;
  * @property FlaggedMessage[] $flaggedMessages
  * @property Message[] $messages
  * @property User $modifiedBy
- * @property Role $role
- * @property Role[] $roles
  * @property Room[] $rooms
  * @property UserRoom[] $userRooms
  * @property User[] $users
@@ -47,15 +45,14 @@ class User extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id_role', 'modified_by', 'created_by'], 'integer'],
-            [['username', 'password', 'visible_name'], 'required'],
+            [['role'], 'required'],
             [['modified_at', 'created_at'], 'safe'],
-            [['username', 'email'], 'string', 'max' => 40],
+            [['modified_by', 'created_by'], 'integer'],
+            [['username', 'email', 'role'], 'string', 'max' => 40],
             [['password'], 'string', 'max' => 150],
             [['visible_name'], 'string', 'max' => 30],
             [['username'], 'unique'],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['created_by' => 'id']],
-            [['id_role'], 'exist', 'skipOnError' => true, 'targetClass' => Role::class, 'targetAttribute' => ['id_role' => 'id']],
             [['modified_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['modified_by' => 'id']],
         ];
     }
@@ -67,11 +64,11 @@ class User extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'id_role' => 'Id Role',
             'username' => 'Username',
             'email' => 'Email',
             'password' => 'Password',
             'visible_name' => 'Visible Name',
+            'role' => 'Role',
             'modified_at' => 'Modified At',
             'modified_by' => 'Modified By',
             'created_at' => 'Created At',
@@ -137,26 +134,6 @@ class User extends \yii\db\ActiveRecord
     public function getModifiedBy()
     {
         return $this->hasOne(User::class, ['id' => 'modified_by']);
-    }
-
-    /**
-     * Gets query for [[Role]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getRole()
-    {
-        return $this->hasOne(Role::class, ['id' => 'id_role']);
-    }
-
-    /**
-     * Gets query for [[Roles]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getRoles()
-    {
-        return $this->hasMany(Role::class, ['modified_by' => 'id']);
     }
 
     /**
