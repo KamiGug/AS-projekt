@@ -24,9 +24,9 @@ $pathingRules = [
 
 
     //fallback simple routing
-    '<action:\w+>' => 'main/default/<action>',
-    '<module:\w+>/<controller:\w+>' => '<module/<controller>/index',
-    '<module:\w+>/<controller:\w+>/<action:\w+>' => '<module/<controller>/<action>',
+    '<controller:\w+>' => 'main/<controller>/index',
+    '<module:\w+>/<controller:\w+>' => '<module>/<controller>/index',
+    '<module:\w+>/<controller:\w+>/<action:\w+>' => '<module>/<controller>/<action>',
 ];
 
 $params = require __DIR__ . '/params.php';
@@ -56,9 +56,12 @@ $config = [
             'rules' => $pathingRules,
         ],
         'user' => [
-            'identityClass' => 'app\models\database\User',
+            'identityClass' => 'app\modules\user\models\User',
             'enableAutoLogin' => true,
-            'loginUrl' => '/login'
+            'loginUrl' => '/login',
+            'accessChecker' => [
+                'class' => 'app\modules\user\models\Authentication\AccessChecker'
+            ]
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',

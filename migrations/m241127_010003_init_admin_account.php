@@ -1,5 +1,6 @@
 <?php
 
+use app\modules\user\models\Authentication\Role;
 use yii\db\Migration;
 
 /**
@@ -14,7 +15,7 @@ class m241127_010003_init_admin_account extends Migration
     {
         $this->insert('User', [
             'id' => 1,
-            'id_role' => 30,
+            'role' => Role::ROLE_ADMINISTRATOR,
             'username' => 'root',
             'email' => 'gug.kamil@gmail.com',
             'password' => Yii::$app->getSecurity()->generatePasswordHash('root'),

@@ -2,7 +2,9 @@
 
 namespace app\controllers;
 
-use app\models\AccessControl;
+use app\modules\user\models\Authentication\AccessControl;
+use app\modules\user\models\Authentication\Role;
+use Yii;
 use yii\web\Controller;
 
 class SiteController extends Controller
@@ -11,8 +13,12 @@ class SiteController extends Controller
      * {@inheritdoc}
      */
 
-    protected $allUsersActions = [];
-    protected $guestActions = [];
+    //actions that are allowed to be accessed by ALL users (guests included)
+    protected $allUsersActions = ['placeholder'];
+
+    //actions that are allowed to be accessed by guests and allowedRoles
+    protected $guestActions = ['placeholder'];
+    //roles that are allowed to access all actions in the controller except guest only actions
     protected $allowedRoles = ['@'];
     public function behaviors()
     {
@@ -29,7 +35,7 @@ class SiteController extends Controller
                     [
                         'actions' => $this->guestActions,
                         'allow' => true,
-                        'roles' => ['?'],
+                        'roles' => ['?', Role::ROLE_TEMPORARY_PLAYER],
                     ],
                     //forbid guests to use any other actions
                     [
@@ -43,6 +49,14 @@ class SiteController extends Controller
                     ]
                 ],
             ],
+//            'denyCallback' => function () {
+//                $userRole = Yii::$app->user->getIdentity()?->role;
+//                if ($userRole === null || $userRole === Role::ROLE_TEMPORARY_PLAYER) {
+//                    return Yii::$app->getResponse();//->redirect('/login');
+//                } else {
+//                    return Yii::$app->getResponse();//->redirect(['/']);
+//                }
+//            }
         ];
     }
 

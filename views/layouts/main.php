@@ -4,6 +4,7 @@
 /** @var string $content */
 
 use app\assets\AppAsset;
+use app\modules\user\models\Authentication\Role;
 use app\widgets\Alert;
 use yii\bootstrap5\Breadcrumbs;
 use yii\bootstrap5\Html;
@@ -42,9 +43,9 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
             <?= Nav::widget([
                 'options' => ['class' => 'navbar-nav'],
                 'items' => [
-                    ['label' => 'Home', 'url' => ['/site/index']],
-                    ['label' => 'About', 'url' => ['/site/about']],
-                    ['label' => 'Contact', 'url' => ['/site/contact']],
+                    ['label' => 'Home', 'url' => ['/']],
+                    ['label' => 'About', 'url' => ['/main/default/about']],
+                    ['label' => 'Contact', 'url' => ['/main/default/contact']],
                 ]
             ]);
             ?>
@@ -55,6 +56,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
                 'options' => ['class' => 'navbar-nav'],
                 'items' => [
                     ...(Yii::$app->user->isGuest
+                        || Yii::$app->user->getIdentity()?->role === Role::ROLE_TEMPORARY_PLAYER
                         ? [
                             ['label' => 'Login', 'url' => ['/login']],
                             ['label' => 'Sign Up', 'url' => ['/signup']],

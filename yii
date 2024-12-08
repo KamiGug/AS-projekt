@@ -1,8 +1,8 @@
 #!/usr/bin/env php
 <?php
 
-if (file_exists(__DIR__ . '/config/enviroment.php')) {
-	require(__DIR__ . '/config/enviroment.php');
+if (file_exists(__DIR__ . '/config/environment.php')) {
+	require(__DIR__ . '/config/environment.php');
 }
 defined('YII_DEBUG') or define('YII_DEBUG', true);
 defined('YII_ENV') or define('YII_ENV', 'DEV');
