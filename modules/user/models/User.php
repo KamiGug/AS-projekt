@@ -131,23 +131,6 @@ class User extends \app\models\generated\User implements IdentityInterface
 //    }
 
     public function signUp() : bool {
-        $commited = false;
-        if (Yii::$app->user->getIdentity()?->role === Role::ROLE_TEMPORARY_PLAYER) {
-            ob_start();
-            var_dump(Role::ROLE_TEMPORARY_PLAYER);
-            file_put_contents('/tmp/dd.log', ob_get_clean() . PHP_EOL, FILE_APPEND);
-            $this->id = Yii::$app->user->getIdentity()->getId();
-            if ($this->validate()) {
-                ob_start();
-                var_dump('validated');
-                file_put_contents('/tmp/dd.log', ob_get_clean() . PHP_EOL, FILE_APPEND);
-                return $this->update();
-            }
-            ob_start();
-            var_dump('failed');
-            var_dump($this->errors);
-            file_put_contents('/tmp/dd.log', ob_get_clean() . PHP_EOL, FILE_APPEND);
-        }
         if ($this->validate()) {
             $commited = $this->save();
             if (!$commited) {
