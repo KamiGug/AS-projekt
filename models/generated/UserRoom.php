@@ -10,6 +10,7 @@ use Yii;
  * @property int $id
  * @property int $id_user
  * @property int $id_room
+ * @property int $player_number
  * @property string|null $left_at
  * @property string|null $created_at
  *
@@ -32,8 +33,8 @@ class UserRoom extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id_user', 'id_room'], 'required'],
-            [['id_user', 'id_room'], 'integer'],
+            [['id_user', 'id_room', 'player_number'], 'required'],
+            [['id_user', 'id_room', 'player_number'], 'integer'],
             [['left_at', 'created_at'], 'safe'],
             [['id_room'], 'exist', 'skipOnError' => true, 'targetClass' => Room::class, 'targetAttribute' => ['id_room' => 'id']],
             [['id_user'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['id_user' => 'id']],
@@ -49,6 +50,7 @@ class UserRoom extends \yii\db\ActiveRecord
             'id' => 'ID',
             'id_user' => 'Id User',
             'id_room' => 'Id Room',
+            'player_number' => 'Player Number',
             'left_at' => 'Left At',
             'created_at' => 'Created At',
         ];

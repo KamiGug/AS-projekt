@@ -149,32 +149,27 @@ class m241126_232828_init extends Migration
             'CASCADE'
         );
 
-        //GameType table
-        $this->createTable('GameType', [
-            'id' => $this->primaryKey(),
-            'name' => $this->string(30)->notNull(),
-        ]);
-
         //Room table
         $this->createTable('Room', [
             'id' => $this->primaryKey(),
-            'id_game_type' => $this->integer()->notNull(),
+            'game_type' => $this->string(40)->notNull(),
             'id_chat' => $this->integer(),
             'game_history' => $this->text()->notNull(),
             'finished_at' => $this->dateTime()->defaultValue(null),
             'current_gamestate' => $this->text(),
+            'modified_at' => $this->dateTime(),
             'created_by' => $this->integer(),
             'created_at' => $this->dateTime()->defaultExpression(new \yii\db\Expression('CURRENT_TIMESTAMP')),
         ]);
-        $this->addForeignKey(
-            'fk_room_id_game_type',
-            'Room',
-            'id_game_type',
-            'GameType',
-            'id',
-            'CASCADE',
-            'CASCADE'
-        );
+        // add a trigger for updating modified_at
+        $this->execute("
+            CREATE TRIGGER trigger_update_room_modified_at
+            BEFORE UPDATE ON Room
+            FOR EACH ROW
+            BEGIN
+                SET NEW.modified_at = CURRENT_TIMESTAMP;
+            END;
+        ");
         $this->addForeignKey(
             'fk_room_id_chat',
             'Room',
@@ -199,6 +194,7 @@ class m241126_232828_init extends Migration
             'id' => $this->primaryKey(),
             'id_user' => $this->integer()->notNull(),
             'id_room' => $this->integer()->notNull(),
+            'player_number' => $this->integer()->notNull(),
             'left_at' => $this->dateTime(),
             'created_at' => $this->dateTime()->defaultExpression(new \yii\db\Expression('CURRENT_TIMESTAMP')),
         ]);
@@ -232,12 +228,12 @@ class m241126_232828_init extends Migration
         $this->dropForeignKey('fk_role_id_room', 'User_Room');
         $this->dropTable('User_Room');
         //drop Room
-        $this->dropForeignKey('fk_room_id_game_type', 'Room');
+        $this->execute("
+            DROP TRIGGER IF EXISTS trigger_update_room_modified_at;
+        ");
         $this->dropForeignKey('fk_room_id_chat', 'Room');
         $this->dropForeignKey('fk_room_created_by', 'Room');
         $this->dropTable('Room');
-        //drop GameType
-        $this->dropTable('GameType');
         //drop FlaggedMessage
         $this->dropForeignKey('fk_flagged_message_id_message', 'FlaggedMessage');
 		$this->dropForeignKey('fk_flagged_message_flagged_by', 'FlaggedMessage');
@@ -253,16 +249,6 @@ class m241126_232828_init extends Migration
         //drop Chat
         $this->dropForeignKey('fk_chat_created_by', 'Chat');
         $this->dropTable('Chat');
-        //drop Role
-        $this->execute("
-            DROP TRIGGER IF EXISTS trigger_update_role_modified_at;
-        ");
-        $this->dropForeignKey('fk_user_id_role', 'User');
-        $this->dropForeignKey('fk_role_modified_by', 'Role');
-        $this->dropTable('Role');
-        $this->execute("
-            DROP TRIGGER IF EXISTS trigger_update_user_modified_at;
-        ");
         //drop User
         $this->dropForeignKey('fk_user_modified_by', 'User');
         $this->dropForeignKey('fk_user_created_by', 'User');

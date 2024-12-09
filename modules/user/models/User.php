@@ -107,29 +107,6 @@ class User extends \app\models\generated\User implements IdentityInterface
         );
     }
 
-//    public static function addUser($username, $email, $password, $visibleName, $role, $id = null) : bool
-//    {
-//        $user = new User();
-//        $user->scenario = self::SCENARIO_SIGNUP;
-//        if ($id !== null) {
-//            $user->id = $id;
-//        }
-//        $user->username = $username;
-//        $user->email = $email;
-//        $user->password = Yii::$app->getSecurity()->generatePasswordHash($password);
-//        $user->visible_name = $visibleName;
-//        $user->role = $role;
-//        try {
-//            $test = $user->save();
-//            ob_start();
-//            var_dump('test', $test);
-//            file_put_contents('/tmp/dd.log', ob_get_clean() . PHP_EOL, FILE_APPEND);
-//            return $test;
-//        } catch (\Exception|\Throwable) {
-//            return false;
-//        }
-//    }
-
     public function signUp() : bool {
         if ($this->validate()) {
             $commited = $this->save();
