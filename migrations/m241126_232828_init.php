@@ -16,9 +16,9 @@ class m241126_232828_init extends Migration
         $this->createTable('User', [
             'id' => $this->primaryKey(),
             'username' => $this->string(40)->unique(),
-            'email' => $this->string(40),
+            'email' => $this->string(40)->unique(),
             'password' => $this->string(150),
-            'visible_name' => $this->string(30),
+            'visible_name' => $this->string(30)->unique(),
             'role' => $this->string(40)->notNull(),
             'modified_at' => $this->dateTime()->defaultExpression(new \yii\db\Expression('CURRENT_TIMESTAMP')),
             'modified_by' => $this->integer(),

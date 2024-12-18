@@ -15,18 +15,22 @@ $modules = [
 ];
 
 $pathingRules = [
+//    '/game/room' => 'game/room/rejoin',
     '/' => 'main/default/index',
     '/login' => 'user/authentication/login',
     '/logout' => 'user/authentication/logout',
     '/signup' => 'user/authentication/signup',
     '/profile/<id:\d+>' => 'user/management/profile',
     '/profile/edit/<id:\d+>' => 'user/management/editProfile',
+    '/chat/<action:[\w-]+>' => 'chat/default/<action>',
+
+    '/game/<controller:\w+>/<action:\w+>' => 'game/<controller>/<action>',
 
 
     //fallback simple routing
-    '<controller:\w+>' => 'main/<controller>/index',
-    '<module:\w+>/<controller:\w+>' => '<module>/<controller>/index',
-    '<module:\w+>/<controller:\w+>/<action:\w+>' => '<module>/<controller>/<action>',
+    '/<action:[\w-]+>' => 'main/default/<action>',
+    '/<controller:[\w-]+>/<action:[\w-]+>' => 'main/<controller>/<action>',
+    '/<module:\w+>/<controller:w+>/<action:w+>' => '<module>/<controller>/<action>',
 ];
 
 $params = require __DIR__ . '/params.php';
@@ -54,6 +58,11 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => $pathingRules,
+            'normalizer' => [
+                'class' => 'yii\web\UrlNormalizer',
+//                'collapseSlashes' => true, // Collapse consecutive slashes into one
+//                'normalizeTrailingSlash' => true, // Remove/add trailing slash based on rules
+            ],
         ],
         'user' => [
             'identityClass' => 'app\modules\user\models\User',

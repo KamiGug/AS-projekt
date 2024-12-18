@@ -23,7 +23,7 @@ class MigrateController extends \yii\console\controllers\MigrateController
                 $generator = new Generator([
                     'ns' => 'app\models\generated',
                     'tableName' => $tableName,
-                    'baseClass' => 'yii\db\ActiveRecord'
+                    'baseClass' => 'yii\db\ActiveRecord',
                 ]);
                 $files = $generator->generate();
                 foreach ($files as $file) {

@@ -31,7 +31,10 @@ class User extends \app\models\generated\User implements IdentityInterface
                 ],
 
                 [['confirmPassword'], 'required', 'on' => self::SCENARIO_SIGNUP],
-
+                [$this->attributes(), 'match',
+                    'pattern' => '/^[^<>"\'%;()&]*$/',
+                    'message' => 'The {attribute} contains invalid characters.',
+                ],
             ]
         );
     }
@@ -108,6 +111,7 @@ class User extends \app\models\generated\User implements IdentityInterface
     }
 
     public function signUp() : bool {
+        $commited = false;
         if ($this->validate()) {
             $commited = $this->save();
             if (!$commited) {
@@ -133,4 +137,28 @@ class User extends \app\models\generated\User implements IdentityInterface
     public static function getRole($userId) : string|null {
         return static::findOne(['id' => $userId])?->role;
     }
+
+//    public static function getRandomName()
+//    {
+//
+//    }
+//
+//    public static function addTemporaryPlayer() : User|null
+//    {
+//        $tempPlayer = new User();
+//        $tempPlayer->scenario = self::SCENARIO_SIGNUP;
+//        $tempPlayer->role = Role::ROLE_TEMPORARY_PLAYER;
+//        $tempPlayer->visible_name = self::getRandomName();
+//        if ($tempPlayer->save()) {
+//            return $tempPlayer;
+//        }
+//        return null;
+//    }
+//
+//    public function makeTemporaryPlayer()
+//    {
+//        if ($this->validate()) {
+//            return Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600*24*30 : 0);
+//        }
+//    }
 }

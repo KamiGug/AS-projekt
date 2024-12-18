@@ -52,6 +52,8 @@ class User extends \yii\db\ActiveRecord
             [['password'], 'string', 'max' => 150],
             [['visible_name'], 'string', 'max' => 30],
             [['username'], 'unique'],
+            [['email'], 'unique'],
+            [['visible_name'], 'unique'],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['created_by' => 'id']],
             [['modified_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['modified_by' => 'id']],
         ];
