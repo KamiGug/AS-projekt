@@ -1,8 +1,8 @@
 <?php
 
-namespace app\modules\game\models;
+namespace app\modules\game\models\ludo;
 
-use app\modules\game\models\BaseGameType;
+use app\modules\game\models\base\BaseGameType;
 
 /*
  * BoardState - csv of game piece positions on the board; each row represents a player. 1-40 is actual gameboard

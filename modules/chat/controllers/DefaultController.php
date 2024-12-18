@@ -1,15 +1,14 @@
 <?php
 
-namespace app\modules\main\controllers;
+namespace app\modules\chat\controllers;
 
 use app\controllers\SiteController;
-use app\modules\user\models\Authentication\Role;
 
 class DefaultController extends SiteController
 {
     protected $allUsersActions = ['index'];
     protected $guestActions = ['contact'];
-    protected $allowedRoles = [Role::ROLE_ADMINISTRATOR];
+    protected $allowedRoles = ['admin'];
     public function actionIndex()
     {
 //        var_dump('asdasd');die;

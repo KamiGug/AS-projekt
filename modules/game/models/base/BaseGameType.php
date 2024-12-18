@@ -1,7 +1,8 @@
 <?php
 
-namespace app\modules\game\models;
+namespace app\modules\game\models\base;
 
+use app\modules\game\models\ludo\LudoGameType;
 use yii\web\HttpException;
 
 /*

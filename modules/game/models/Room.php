@@ -61,4 +61,22 @@ class Room extends Base
             ]
         );
     }
+
+    public static function getPageCount($itemCountPerPage) : null|int
+    {
+        $itemCount = (int) (self::find()
+            ->where(['finished_at' => null])
+            ->count());
+        if ($itemCount === null) {
+            return null;
+        }
+        return $itemCount / $itemCountPerPage + ($itemCount % $itemCountPerPage === 0 ? 0 : 1);
+    }
+
+    public static function getRoomsPage($page, $itemCount) : array|null
+    {
+
+        return null;
+    }
+
 }
