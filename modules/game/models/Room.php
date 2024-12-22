@@ -5,6 +5,7 @@ namespace app\modules\game\models;
 use app\models\DBDate;
 use \app\models\generated\Room as Base;
 use Yii;
+use yii\db\ActiveRecord;
 use yii\web\HttpException;
 use function PHPUnit\Framework\throwException;
 
@@ -142,5 +143,34 @@ class Room extends Base
             'createdAt' => $this->created_at,
             'createdBy' => $this->created_by,
         ];
+    }
+
+    public function playerJoined($userId) : bool
+    {
+        return UserRoom::playerJoinedRoom($userId, $this->id);
+    }
+
+    public static function getById($roomId) : ActiveRecord|null
+    {
+        $room = null;
+        try {
+            $room = Room::find()
+                ->where(['id' => $roomId])
+                ->one();
+        } catch (\Throwable|\Exception $e) { }
+        return $room;
+    }
+
+    public function getPlayerCount() : int
+    {
+        return UserRoom::getCountByRoomId($this->id, false);
+    }
+
+    public function join($userId) : bool
+    {
+        if ($this->playerJoined($userId)) {
+            return true;
+        }
+        return UserRoom::addUserToRoom($userId, $this->id);
     }
 }

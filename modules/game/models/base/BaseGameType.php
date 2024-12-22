@@ -2,7 +2,7 @@
 
 namespace app\modules\game\models\base;
 
-use app\modules\game\models\ludo\LudoGameType;
+use app\modules\game\models\GameTypes;
 use yii\web\HttpException;
 
 /*
@@ -15,15 +15,8 @@ use yii\web\HttpException;
 
 abstract class BaseGameType
 {
-    final const TYPE_BASE = 'base';
-    final const TYPE_LUDO = 'ludo';
-
-    final const GAME_TYPE_MAP = [
-        self::TYPE_BASE => self::class,
-        self::TYPE_LUDO => LudoGameType::class,
-    ];
-
-    public static string $name = self::TYPE_BASE;
+    public static string $name = GameTypes::TYPE_BASE;
+    public static int $maxPlayers = 0;
 
     private string $boardState;
 
@@ -58,4 +51,6 @@ abstract class BaseGameType
     public abstract function validateMove(string $move) : bool;
 
     public abstract function getBoardStateAfterMove(string $move) : string;
+
+    public abstract static function getTemplates() : array;
 }

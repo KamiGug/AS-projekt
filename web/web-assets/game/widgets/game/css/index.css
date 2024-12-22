@@ -1,4 +1,12 @@
-/* HTML: <div class="loader"></div> */
+#game-wrapper {
+    width: 70vw;
+    height: 70vh;
+}
+
+/* todo: add media query for #game-wrapper */
+
+
+
 .loader {
     position: absolute;
     top: calc(50% - 4rem);

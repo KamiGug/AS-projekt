@@ -3,6 +3,8 @@
 namespace app\modules\game\models\ludo;
 
 use app\modules\game\models\base\BaseGameType;
+use app\modules\game\models\GameTypes;
+use Yii;
 
 /*
  * BoardState - csv of game piece positions on the board; each row represents a player. 1-40 is actual gameboard
@@ -13,6 +15,8 @@ use app\modules\game\models\base\BaseGameType;
 
 class LudoGameType extends BaseGameType
 {
+    public static string $name = GameTypes::TYPE_LUDO;
+    public static int $maxPlayers = 4;
 
     public static function initialBoardState(?array $arg = null): string
     {
@@ -42,5 +46,12 @@ class LudoGameType extends BaseGameType
     {
         // TODO: Implement getBoardStateAfterMove() method.
         return '';
+    }
+
+    public static function getTemplates(): array
+    {
+        return [
+            'board' => Yii::$app->view->renderPhpFile(__DIR__ . '/../../views/ludo/board.php'),
+        ];
     }
 }

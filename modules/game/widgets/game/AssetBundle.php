@@ -9,8 +9,9 @@ class AssetBundle extends Base
     public $basePath = __DIR__;
     public $baseUrl = '@web/web-assets/game/widgets/game/';
     public $css = [
-        'css/loader.css',
+        'css/index.css',
         'css/list.css',
+        'css/game.css'
     ];
     public $js = [
         'js/index.js',
