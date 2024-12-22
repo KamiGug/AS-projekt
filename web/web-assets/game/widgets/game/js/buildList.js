@@ -7,7 +7,10 @@ const listVars = {
 
 const buildListFunctions = {
     // todo: add some sort of reading into listVars.itemCount
-    initList: () => {
+    initList: (resetGameWrapper = true) => {
+        if (resetGameWrapper) {
+            roomFunctions.resetGameWrapper();
+        }
         $.ajax({
             url: '/game/room/init-list',
             type: 'POST',
@@ -20,7 +23,7 @@ const buildListFunctions = {
             },
             error: () => {
                 setTimeout(() => {
-                    buildListFunctions.initList();
+                    buildListFunctions.initList(false);
                 }, 1000)
             },
         })
@@ -55,11 +58,11 @@ const buildListFunctions = {
             }),
             success: function(response) {
                 buildListFunctions.clearList();
+                const listWrapper = $('#room-list-wrapper');
                 if (response.rooms.length < 1) {
-                    $(listTemplates.emptyMessage ?? '<div>').appendTo($('#room-list-wrapper'));
+                    $(listTemplates.emptyMessage ?? '<div>').appendTo(listWrapper);
                     return;
                 }
-                const listWrapper = $('#room-list-wrapper');
                 buildListFunctions.setUpPagination(response.page, response.pageCount)
                 for (const room of response.rooms) {
                     $(roomFunctions.fillView(listTemplates.elementPartial, room))

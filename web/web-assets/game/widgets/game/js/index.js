@@ -1,13 +1,14 @@
 $(() => {
-    roomFunctions.callRejoin();
+    roomFunctions.init();
 })
 
 let pageNumber = 0;
 
 // todo: add function add error
+const loader = '<div class="loader"></div>'
 
 const roomFunctions = {
-    callRejoin: () => {
+    init: () => {
         $.ajax({
             url: '/game/room/rejoin',
             type: 'POST',
@@ -18,7 +19,7 @@ const roomFunctions = {
             },
             error: () => {
                 setTimeout(() => {
-                    roomFunctions.callRejoin()
+                    roomFunctions.init()
                 }, 1000)
             },
 
@@ -26,9 +27,9 @@ const roomFunctions = {
     },
     decideListOrJoinRoom: (response) => {
         if (response?.room === null) {
-            return buildListFunctions.initList()
+            return buildListFunctions.initList(false)
         } else {
-            return gameFunctions.initGame(response.room)
+            return gameFunctions.initGame(response.room, false)
         }
     },
     showLoader: () => {
@@ -45,4 +46,9 @@ const roomFunctions = {
         ].join('\n'))
         return handler(args)
     },
+    resetGameWrapper: () => {
+        const gameWrapper = $('#game-wrapper');
+        gameWrapper.empty();
+        gameWrapper.append($(loader));
+    }
 }

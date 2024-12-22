@@ -15,7 +15,7 @@ class m241218_174824_test_room extends Migration
         if (strtolower(YII_ENV) === 'dev') {
             $this->insert('Room', [
                 'id' => 1,
-                'game_type' => \app\modules\game\models\base\BaseGameType::TYPE_LUDO,
+                'game_type' => \app\modules\game\models\GameTypes::TYPE_LUDO,
                 'game_history' => '',
                 'current_gamestate' => '',
             ]);

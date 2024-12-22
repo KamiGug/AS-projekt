@@ -15,13 +15,8 @@ class DefaultController extends SiteController
         return $this->render('index');
     }
 
-    public function actionAbout()
+    public function actionInit($id)
     {
-        return $this->render('about');
-    }
-
-    public function actionContact()
-    {
-        return $this->render('contact');
+        return json_encode([]);
     }
 }

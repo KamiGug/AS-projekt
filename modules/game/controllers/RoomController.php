@@ -3,12 +3,16 @@
 namespace app\modules\game\controllers;
 
 use app\controllers\SiteController;
+use app\models\exceptions\NoSuchRoomException;
+use app\modules\game\models\base\BaseGameType;
+use app\modules\game\models\GameTypes;
 use app\modules\game\models\Room;
 use app\modules\game\models\RoomList;
 use app\modules\game\models\UserRoom;
 use app\modules\user\models\Authentication\Role;
 use Yii;
 use yii\helpers\Url;
+use yii\web\HttpException;
 use yii\web\Response;
 
 class RoomController extends SiteController
@@ -66,13 +70,28 @@ class RoomController extends SiteController
     }
 
     //Join a room
+    //Always join as spectator and have times when allowed to change from spectator to player
     public function actionJoin($id)
     {
-
+        if (!Yii::$app->request->isAjax) {
+            return $this->redirect('/');
+        }
+        $room = Room::getById($id);
+        if ($room->join(Yii::$app->user->getId()) === false) {
+            throw new HttpException(500, 'Unable to join room');
+        }
+//            if ($room->getPlayerCount() >= GameTypes::GAME_TYPE_MAP[$room->type]::maxPlayers) {
+//                throw new HttpException(403, 'This game has already a maximum number of players');
+//            }
+//        }
+        return json_encode(['id' => $id]);
     }
 
-    public function actionRejoin(): false|string
+    public function actionRejoin(): false|string|Response
     {
+        if (!Yii::$app->request->isAjax) {
+            return $this->redirect('/');
+        }
         $userRoom = UserRoom::getPlayerCurrentRoomConnection(Yii::$app->user->getId());
 
         return json_encode(
@@ -94,8 +113,26 @@ class RoomController extends SiteController
         //gets move from post data and passes it to correct model to handle it
     }
 
-    public function actionInitRoom($id)
+    public function actionInitRoom($id): Response|false|string
     {
+        if (!Yii::$app->request->isAjax) {
+            return $this->redirect('/');
+        }
+        $room = Room::getById($id);
+        if ($room === null) {
+            throw new NoSuchRoomException($id);
+        }
+//        if ($model->playerJoined(Yii::$app->user->getId()) === false) {
+//            throw new HttpException(403, 'Player has not joined this game!');
+//        }
+
+        return json_encode([
+            'gameTemplate' => $this->renderPartial('game/template'),
+//            'board' => $this->renderPartial('../' . ($model->game_type ?? GameTypes::TYPE_BASE) . '/board'),
+            'chatWrapper' => $this->renderPartial('game/chat'),
+            //'../json/' . ($model->game_type ?? GameTypes::TYPE_BASE) . '.json'
+            ...(GameTypes::GAME_TYPE_MAP[$room->game_type]::getTemplates())
+        ]);
         // send view-template with empty space for board and chat wrapper
         // for board side: call EmptyBoard and Refresh
         // for chat side: call chat init action
