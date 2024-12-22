@@ -3,6 +3,7 @@
 namespace app\modules\game\controllers;
 
 use app\controllers\SiteController;
+use app\modules\game\models\Room;
 use app\modules\game\models\RoomList;
 use app\modules\game\models\UserRoom;
 use app\modules\user\models\Authentication\Role;
@@ -41,6 +42,8 @@ class RoomController extends SiteController
             ),
             'listTemplate' => $this->renderPartial('list/template'),
             'listBar' => $this->renderPartial('list/bar'),
+            'emptyMessage' => $this->renderPartial('list/empty'),
+            'listFooter' => $this->renderPartial('list/footer')
         ]);
     }
 
@@ -52,9 +55,15 @@ class RoomController extends SiteController
         $body = json_decode($this->request->getRawBody(), true);
         if (!isset($body['pageNumber'])) $body['pageNumber'] = 0;
         if (!isset($body['itemCount'])) $body['itemCount'] = 25;
-
+        if (!isset($body['timestamp'])) $body['timestamp'] = null;
+        if (!isset($body['sortOrder'])) $body['sortOrder'] = null;
+        return json_encode(Room::getRoomsPage(
+            $body['pageNumber'],
+            $body['itemCount'],
+            $body['timestamp'],
+            $body['sortOrder']
+        ));
     }
-        // return json with information needed to build each list block about
 
     //Join a room
     public function actionJoin($id)
@@ -91,11 +100,6 @@ class RoomController extends SiteController
         // for board side: call EmptyBoard and Refresh
         // for chat side: call chat init action
         // * view with RoomWidget
-    }
-
-    public function actionEmptyBoard($gameType)
-    {
-
     }
 
     //Refresh Board State and Move List

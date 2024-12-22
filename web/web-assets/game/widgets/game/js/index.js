@@ -1,16 +1,10 @@
 $(() => {
     roomFunctions.callRejoin();
-    // setInterval(() => {
-    //     if ($('#game-wrapper .loader').is(":visible")) {
-    //         roomFunctions.hideLoader()
-    //     } else {
-    //         roomFunctions.showLoader()
-    //     }
-    // }, 5000)
-
 })
 
 let pageNumber = 0;
+
+// todo: add function add error
 
 const roomFunctions = {
     callRejoin: () => {
@@ -34,7 +28,7 @@ const roomFunctions = {
         if (response?.room === null) {
             return buildListFunctions.initList()
         } else {
-            return roomFunctions.getRoom(response.room)
+            return gameFunctions.initGame(response.room)
         }
     },
     showLoader: () => {
@@ -43,7 +37,12 @@ const roomFunctions = {
     hideLoader: () => {
         $('#game-wrapper .loader').hide()
     },
-    // getRoom: (id) => {
-    //
-    // }
+    fillView: (view, args = {}) => {
+        const handler = new Function('args', [
+            'const tagged = ( ' + Object.keys(args).join(', ') + ' ) =>',
+            '`' + view + '`',
+            'return tagged(...Object.values(args))'
+        ].join('\n'))
+        return handler(args)
+    },
 }
