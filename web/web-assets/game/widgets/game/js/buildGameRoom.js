@@ -55,7 +55,15 @@ const gameFunctions = {
         console.log(gameTemplates)
     },
     buildRoom: () => {
-        $(roomFunctions.fillView(gameTemplates.gameTemplate, gameTemplates)).appendTo($('#game-wrapper'));
+        let view = gameTemplates.gameTemplate;
+        let newView;
+        while (true) {
+            newView = roomFunctions.fillView(view, gameTemplates);
+            if (view === newView) break;
+            console.log(view);
+            view = newView;
+        }
+        $(view).appendTo($('#game-wrapper'));
         // gameTemplate.children('#game-board').replaceWith($(gameTemplates.board ?? '<div>'));
         // gameTemplate.children('#game-chat').replaceWith($(gameTemplates.chatWrapper ?? '<div>'));
         roomFunctions.hideLoader();
