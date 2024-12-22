@@ -3,4 +3,5 @@
 /** @var yii\web\View $this */
 
 ?>
-tile element
+<div class="room-list-element tile">tile element</div>
+
