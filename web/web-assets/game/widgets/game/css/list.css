@@ -1,0 +1,54 @@
+#room-list-template {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#room-list-bar {
+    /*height: 100%;*/
+    width: 100%;
+    flex: 0;
+}
+
+#room-list-wrapper {
+    height: 100%;
+    /*width: 100%;*/
+    border: 1px solid hotpink;
+
+}
+
+#room-list-wrapper.list {
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+}
+
+#room-list-wrapper.tile {
+
+}
+
+.room-list-element {
+
+}
+
+.room-list-element.list {
+    width: 100%;
+    background-color: #f0f0d0;
+    border-width: 0 1px 1px 1px;
+    border-color: black;
+    border-style: solid;
+}
+
+.room-list-element.list:first-child {
+    border-width: 1px;
+}
+
+.room-list-element.list:nth-child(even) {
+    background-color: #d0f0f0;
+}
+
+
+.room-list-element.tile {
+
+}

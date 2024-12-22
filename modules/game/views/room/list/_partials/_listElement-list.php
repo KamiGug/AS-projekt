@@ -2,4 +2,6 @@
 
 /** @var yii\web\View $this */
 ?>
-list element
+<div class="room-list-element list" data-id="${id}">
+    list element id - ${id}
+</div>

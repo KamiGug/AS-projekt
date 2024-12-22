@@ -1,4 +1,12 @@
+const listTemplates = {}
+const listVars = {
+    lastRefresh: null,
+    itemCount: 25,
+    currentPage: 0,
+}
+
 const buildListFunctions = {
+    // todo: add some sort of reading into listVars.itemCount
     initList: () => {
         $.ajax({
             url: '/game/room/init-list',
@@ -7,7 +15,8 @@ const buildListFunctions = {
             dataType: "json",
             data: JSON.stringify({type: 'list'}),
             success: function(response) {
-                buildListFunctions.buildList(response)
+                buildListFunctions.fillListTemplates(response);
+                buildListFunctions.buildList()
             },
             error: () => {
                 setTimeout(() => {
@@ -16,20 +25,23 @@ const buildListFunctions = {
             },
         })
     },
-    buildList: (response) => {
-        console.log('in Build');
-        // $('#game-wrapper').add('div').html(response?.template);
-        // outterWrapper.add(response?.template);
-        const listTemplate = $(response?.listTemplate ?? '<div>').appendTo($('#game-wrapper'));
-        // $('#game-wrapper').append($(response?.listTemplate ?? '<div>'))
-
-        //$('#room-list-template#room-list-bar').append($(response?.listBar ?? '<div>'))
-        listTemplate.children('#room-list-bar').replaceWith($(response?.listBar ?? '<div>'));
-        const listWrapper = listTemplate.children('#room-list-wrapper').replaceWith($(response?.listPartial ?? '<div>'));
-        buildListFunctions.fillList(listWrapper);
+    fillListTemplates: (response) => {
+        listTemplates.listTemplate = response?.listTemplate;
+        listTemplates.listBar = response?.listBar;
+        listTemplates.listPartial = response?.listPartial;
+        listTemplates.elementPartial = response?.elementPartial;
+        listTemplates.emptyMessage = response?.emptyMessage;
+        listTemplates.listFooter = response?.listFooter;
+    },
+    buildList: () => {
+        const listTemplate = $(listTemplates.listTemplate ?? '<div>').appendTo($('#game-wrapper'));
+        listTemplate.children('#room-list-bar').replaceWith($(listTemplates?.listBar ?? '<div>'));
+        listTemplate.children('#room-list-wrapper').replaceWith($(listTemplates?.listPartial ?? '<div>'));
+        listTemplate.children('#room-list-footer').replaceWith($(listTemplates?.listFooter ?? '<div>'));
+        buildListFunctions.fillList();
         roomFunctions.hideLoader();
     },
-    fillList: (root, page = 0, itemCount = 25) => {
+    fillList: (page = 0) => {
         $.ajax({
             url: '/game/room/list',
             type: 'POST',
@@ -37,19 +49,48 @@ const buildListFunctions = {
             dataType: "json",
             data: JSON.stringify({
                 pageNumber: page,
-                itemCount: itemCount,
+                itemCount: listVars.itemCount,
+                timestamp: listVars.lastRefresh,
+                sortOrder: null,
             }),
             success: function(response) {
-                buildListFunctions.buildList(response)
+                buildListFunctions.clearList();
+                if (response.rooms.length < 1) {
+                    $(listTemplates.emptyMessage ?? '<div>').appendTo($('#room-list-wrapper'));
+                    return;
+                }
+                const listWrapper = $('#room-list-wrapper');
+                buildListFunctions.setUpPagination(response.page, response.pageCount)
+                for (const room of response.rooms) {
+                    $(roomFunctions.fillView(listTemplates.elementPartial, room))
+                        .appendTo(listWrapper)
+                        .on('click', (e) => {
+                            gameFunctions.joinGame(e.target.dataset?.id);
+                        });
+                }
+                // use the listVars.listWrapper
+                // buildListFunctions.buildList(response)
             },
             error: () => {
                 setTimeout(() => {
-                    buildListFunctions.initList();
+                    buildListFunctions.fillList(page);
                 }, 1000)
             },
-        })
+        });
+    },
+    // todo: finish setUpPagination
+    setUpPagination: (pageNumber, pageCount) => {
+        console.log('todo: finish setUpPagination')
+        console.log('pageNumber', pageNumber)
+        console.log('pageCount', pageCount)
     },
     clearList: () => {
         $('#room-list-wrapper').empty();
     },
+    refreshList: () => {
+        roomFunctions.showLoader();
+        listVars.lastRefresh = null;
+        buildListFunctions.fillList()
+        roomFunctions.hideLoader();
+    }
 }
