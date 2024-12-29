@@ -51,6 +51,4 @@ abstract class BaseGameType
     public abstract function validateMove(string $move) : bool;
 
     public abstract function getBoardStateAfterMove(string $move) : string;
-
-    public abstract static function getTemplates() : array;
 }
