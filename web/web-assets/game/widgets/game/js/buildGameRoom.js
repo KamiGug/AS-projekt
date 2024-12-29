@@ -1,8 +1,7 @@
-const gameTemplates = {}
 const gameVars = {
     initRetryCounter: 0,
     initRetryCounterLimit: 3,
-    gameType: 'base',
+    // gameType: 'base',
 }
 
 const gameFunctions = {
@@ -36,8 +35,8 @@ const gameFunctions = {
             success: function(response) {
                 gameVars.initRetryCounter = 0;
                 console.log('init successful');
-                gameFunctions.fillRoomTemplates(response);
-                gameFunctions.buildRoom();
+                // gameFunctions.fillRoomTemplates(response);
+                gameFunctions.buildRoom(response);
             },
             error: () => {
                 if (++gameVars.initRetryCounter > gameVars.initRetryCounterLimit) {
@@ -50,26 +49,14 @@ const gameFunctions = {
             },
         });
     },
-    fillRoomTemplates: (response) => {
-        Object.assign(gameTemplates, response)
-        console.log(gameTemplates)
-    },
-    buildRoom: () => {
-        let view = gameTemplates.gameTemplate;
-        let newView;
-        while (true) {
-            newView = roomFunctions.fillView(view, gameTemplates);
-            if (view === newView) break;
-            console.log(view);
-            view = newView;
-        }
-        $(view).appendTo($('#game-wrapper'));
-        // gameTemplate.children('#game-board').replaceWith($(gameTemplates.board ?? '<div>'));
-        // gameTemplate.children('#game-chat').replaceWith($(gameTemplates.chatWrapper ?? '<div>'));
-        roomFunctions.hideLoader();
+    buildRoom: (response) => {
+        const gameWrapper = $('#game-wrapper');
+        gameWrapper.append(response.board);
+        // gameWrapper.append($(gameTemplates.chatWrapper));
+        // gameFunctions.initChat(response.id);
     },
     // todo: implement initChat
-    initChat: () => {
+    initChat: (id) => {
         console.log('todo: implement initChat')
     },
     quitGame: (id) => {
