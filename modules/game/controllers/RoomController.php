@@ -127,11 +127,8 @@ class RoomController extends SiteController
 //        }
 
         return json_encode([
-            'gameTemplate' => $this->renderPartial('game/template'),
-//            'board' => $this->renderPartial('../' . ($model->game_type ?? GameTypes::TYPE_BASE) . '/board'),
-            'chatWrapper' => $this->renderPartial('game/chat'),
-            //'../json/' . ($model->game_type ?? GameTypes::TYPE_BASE) . '.json'
-            ...(GameTypes::GAME_TYPE_MAP[$room->game_type]::getTemplates())
+            'board' => $this->renderAjax($room->game_type),
+            'id' => $id,
         ]);
         // send view-template with empty space for board and chat wrapper
         // for board side: call EmptyBoard and Refresh
