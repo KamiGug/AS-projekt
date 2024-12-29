@@ -47,11 +47,4 @@ class LudoGameType extends BaseGameType
         // TODO: Implement getBoardStateAfterMove() method.
         return '';
     }
-
-    public static function getTemplates(): array
-    {
-        return [
-            'board' => Yii::$app->view->renderPhpFile(__DIR__ . '/../../views/ludo/board.php'),
-        ];
-    }
 }
