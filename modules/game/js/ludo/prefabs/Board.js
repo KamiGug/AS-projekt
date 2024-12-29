@@ -10,6 +10,8 @@ class Board extends Phaser.GameObjects.Sprite {
 
     gameSpaces = new Array(12 * 4);
     yardSpaces = new Array(4 * 4);
+    homeSpaces = [new Array(4), new Array(4), new Array(4), new Array(4)];
+    playerPieces = new Array(4 * 4);
 
     constructor(scene, x, y) {
         super(scene, x, y, 'board');
@@ -29,9 +31,9 @@ class Board extends Phaser.GameObjects.Sprite {
         this.boardSide *= this.unit;
 
         scene.add.existing(this);
-        console.log(this);
         this.initBoardSpaces();
         this.initYardSpaces();
+        this.initPlayerPieces();
     }
 
     initBoardSpaces() {
@@ -39,10 +41,12 @@ class Board extends Phaser.GameObjects.Sprite {
         for (let j = 0; j < 6; j++) {
             this.gameSpaces[i] = new BoardSpace(
                 this.scene,
-                this.x + (- 6 + j) * this.squareSpaceSide,
+                this.x + (-6 + j) * this.squareSpaceSide,
                 this.y - this.squareSpaceSide,
                 this.gameScale,
-                BoardSpace.TYPE_SQUARE
+                BoardSpace.TYPE_SQUARE,
+                this.squareSpaceSide,
+                i
             );
             i++;
         }
@@ -50,9 +54,11 @@ class Board extends Phaser.GameObjects.Sprite {
             this.gameSpaces[i] = new BoardSpace(
                 this.scene,
                 this.x - this.squareSpaceSide,
-                this.y + (- 2 - j) * this.squareSpaceSide,
+                this.y + (-2 - j) * this.squareSpaceSide,
                 this.gameScale,
-                BoardSpace.TYPE_SQUARE
+                BoardSpace.TYPE_SQUARE,
+                this.squareSpaceSide,
+                i
             );
             i++;
         }
@@ -61,15 +67,19 @@ class Board extends Phaser.GameObjects.Sprite {
             this.x,
             this.y - 6 * this.squareSpaceSide,
             this.gameScale,
-            BoardSpace.TYPE_SQUARE
+            BoardSpace.TYPE_SQUARE,
+            this.squareSpaceSide,
+            i
         );
         for (let j = 0; j < 6; j++) {
             this.gameSpaces[i] = new BoardSpace(
                 this.scene,
                 this.x + this.squareSpaceSide,
-                this.y + (- 6 + j) * this.squareSpaceSide,
+                this.y + (-6 + j) * this.squareSpaceSide,
                 this.gameScale,
-                BoardSpace.TYPE_SQUARE
+                BoardSpace.TYPE_SQUARE,
+                this.squareSpaceSide,
+                i
             );
             i++;
         }
@@ -79,16 +89,20 @@ class Board extends Phaser.GameObjects.Sprite {
                 this.x + (2 + j) * this.squareSpaceSide,
                 this.y - this.squareSpaceSide,
                 this.gameScale,
-                BoardSpace.TYPE_SQUARE
+                BoardSpace.TYPE_SQUARE,
+                this.squareSpaceSide,
+                i
             );
             i++;
         }
         this.gameSpaces[i++] = new BoardSpace(
             this.scene,
-            this.x  + 6 * this.squareSpaceSide,
+            this.x + 6 * this.squareSpaceSide,
             this.y,
             this.gameScale,
-            BoardSpace.TYPE_SQUARE
+            BoardSpace.TYPE_SQUARE,
+            this.squareSpaceSide,
+            i
         );
         for (let j = 0; j < 6; j++) {
             this.gameSpaces[i] = new BoardSpace(
@@ -96,7 +110,9 @@ class Board extends Phaser.GameObjects.Sprite {
                 this.x + (6 - j) * this.squareSpaceSide,
                 this.y + this.squareSpaceSide,
                 this.gameScale,
-                BoardSpace.TYPE_SQUARE
+                BoardSpace.TYPE_SQUARE,
+                this.squareSpaceSide,
+                i
             );
             i++;
         }
@@ -106,7 +122,9 @@ class Board extends Phaser.GameObjects.Sprite {
                 this.x + this.squareSpaceSide,
                 this.y + (2 + j) * this.squareSpaceSide,
                 this.gameScale,
-                BoardSpace.TYPE_SQUARE
+                BoardSpace.TYPE_SQUARE,
+                this.squareSpaceSide,
+                i
             );
             i++;
         }
@@ -115,7 +133,9 @@ class Board extends Phaser.GameObjects.Sprite {
             this.x,
             this.y + 6 * this.squareSpaceSide,
             this.gameScale,
-            BoardSpace.TYPE_SQUARE
+            BoardSpace.TYPE_SQUARE,
+            this.squareSpaceSide,
+            i
         );
         for (let j = 0; j < 6; j++) {
             this.gameSpaces[i] = new BoardSpace(
@@ -123,7 +143,9 @@ class Board extends Phaser.GameObjects.Sprite {
                 this.x - this.squareSpaceSide,
                 this.y + (6 - j) * this.squareSpaceSide,
                 this.gameScale,
-                BoardSpace.TYPE_SQUARE
+                BoardSpace.TYPE_SQUARE,
+                this.squareSpaceSide,
+                i
             );
             i++;
         }
@@ -133,7 +155,9 @@ class Board extends Phaser.GameObjects.Sprite {
                 this.x - (2 + j) * this.squareSpaceSide,
                 this.y + this.squareSpaceSide,
                 this.gameScale,
-                BoardSpace.TYPE_SQUARE
+                BoardSpace.TYPE_SQUARE,
+                this.squareSpaceSide,
+                i
             );
             i++;
         }
@@ -142,7 +166,9 @@ class Board extends Phaser.GameObjects.Sprite {
             this.x - 6 * this.squareSpaceSide,
             this.y,
             this.gameScale,
-            BoardSpace.TYPE_SQUARE
+            BoardSpace.TYPE_SQUARE,
+            this.squareSpaceSide,
+            i
         );
 
         this.gameSpaces[0].setColor('blue');
@@ -174,9 +200,54 @@ class Board extends Phaser.GameObjects.Sprite {
                     this.x + (xi * 4 * this.squareSpaceSide) + (xj * this.circleSpaceOffset),
                     this.y + (yi * 4 * this.squareSpaceSide) + (yj * this.circleSpaceOffset),
                     this.gameScale,
-                    BoardSpace.TYPE_CIRCLE
+                    BoardSpace.TYPE_CIRCLE,
+                    this.circleSpaceRadius,
+                    -1
                 )
             }
         }
+    }
+
+    initPlayerPieces() {
+        for (let i = 0; i < 4; i++) {
+            this.playerPieces[i] = new Piece(
+                this.scene,
+                this.yardSpaces[i].x,
+                this.yardSpaces[i].y,
+                this.gameScale,
+                'blue',
+                i
+            );
+            this.playerPieces[i + 4] = new Piece(
+                this.scene,
+                this.yardSpaces[i + 4].x,
+                this.yardSpaces[i + 4].y,
+                this.gameScale,
+                'red',
+                i + 4
+            );
+            this.playerPieces[i + 8] = new Piece(
+                this.scene,
+                this.yardSpaces[i + 8].x,
+                this.yardSpaces[i + 8].y,
+                this.gameScale,
+                'green',
+                i + 8
+            );
+            this.playerPieces[i + 12] = new Piece(
+                this.scene,
+                this.yardSpaces[i + 12].x,
+                this.yardSpaces[i + 12].y,
+                this.gameScale,
+                'yellow',
+                i + 12
+            );
+        }
+    }
+
+    resetPlayerPieceById(id) {
+        this.playerPieces[id].resetSpaceUnderPiece();
+        this.playerPieces[id].boardSpaceId = -1;
+        this.playerPieces[id].setPosition(this.yardSpaces[id].x, this.yardSpaces[id].y);
     }
 }
