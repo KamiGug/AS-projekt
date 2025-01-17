@@ -8,11 +8,14 @@ use Yii;
  * This is the model class for table "Room".
  *
  * @property int $id
+ * @property string $name
  * @property string $game_type
  * @property int|null $id_chat
+ * @property int $current_player_number
  * @property string $game_history
  * @property string|null $finished_at
  * @property string|null $current_gamestate
+ * @property int $seed
  * @property string|null $modified_at
  * @property int|null $created_by
  * @property string|null $created_at
@@ -37,10 +40,11 @@ class Room extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['game_type', 'game_history'], 'required'],
-            [['id_chat', 'created_by'], 'integer'],
+            [['name', 'game_type', 'current_player_number', 'game_history', 'seed'], 'required'],
+            [['id_chat', 'current_player_number', 'seed', 'created_by'], 'integer'],
             [['game_history', 'current_gamestate'], 'string'],
             [['finished_at', 'modified_at', 'created_at'], 'safe'],
+            [['name'], 'string', 'max' => 16],
             [['game_type'], 'string', 'max' => 40],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['created_by' => 'id']],
             [['id_chat'], 'exist', 'skipOnError' => true, 'targetClass' => Chat::class, 'targetAttribute' => ['id_chat' => 'id']],
@@ -54,11 +58,14 @@ class Room extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
+            'name' => 'Name',
             'game_type' => 'Game Type',
             'id_chat' => 'Id Chat',
+            'current_player_number' => 'Current Player Number',
             'game_history' => 'Game History',
             'finished_at' => 'Finished At',
             'current_gamestate' => 'Current Gamestate',
+            'seed' => 'Seed',
             'modified_at' => 'Modified At',
             'created_by' => 'Created By',
             'created_at' => 'Created At',

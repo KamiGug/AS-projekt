@@ -5,7 +5,7 @@ class BoardSpace extends Phaser.GameObjects.Zone {
     type
     color = 'default';
     id
-    playerPieceId = null;
+    playerPieceId = -1;
 
     //correspondingLength is either circleSpaceRadius or squareSpaceSide
     constructor(scene, x, y, scale, type, correspondingLength, id) {
@@ -22,6 +22,11 @@ class BoardSpace extends Phaser.GameObjects.Zone {
         if (this.type === BoardSpace.TYPE_SQUARE) {
             this.setRectangleDropZone(correspondingLength, correspondingLength);
         }
+
+        this.on('pointerdown', (pointer) => {
+            console.log(this.id);
+            console.log(gameVars)
+        })
         // else {
         //     this.setCircleDropZone(correspondingLength);
         // }
@@ -68,11 +73,11 @@ class BoardSpace extends Phaser.GameObjects.Zone {
     }
 
     setPlayerPieceId(id = null) {
-        this.playerPieceId = id;
+        this.playerPieceId = id ?? -1;
     }
 
     collideWithPlayerPiece() {
-        if (this.playerPieceId !== null) {
+        if (this.playerPieceId !== -1) {
             this.scene.board.resetPlayerPieceById(this.playerPieceId);
         }
     }
