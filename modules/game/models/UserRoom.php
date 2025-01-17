@@ -61,13 +61,17 @@ class UserRoom extends \app\models\generated\UserRoom
         }
     }
 
-    public static function getSingleUserRoom($userId, $roomId) : ActiveRecord|null
+    public static function getSingleUserRoom($userId, $roomId, $isCurrent = false) : ActiveRecord|null
     {
         $userRoom = null;
         try {
             $userRoom = self::find()
                 ->where(['id_user' => $userId])
-                ->andWhere(['id_room' => $roomId])
+                ->andWhere(['id_room' => $roomId]);
+            if ($isCurrent) {
+                $userRoom = $userRoom->andWhere(['left_at' => null]);
+            }
+            $userRoom = $userRoom
                 ->orderBy(['created_at' => 'DESC'])
                 ->one();
 
@@ -86,17 +90,64 @@ class UserRoom extends \app\models\generated\UserRoom
         return $add->save();
     }
 
-    public function makePlayer($playerNumber) : bool
+    public function removePlayerFromRoom() : bool
     {
-        //todo: change existing this->left_at as current timestamp and add new UserRoom with number (after checking if available ofc)
-        //todo: add saving to move history of a game
-        return false;
+        $this->left_at = date("Y-m-d H:i:s");;
+        return $this->save();
     }
 
-    public function makeSpectator() : bool
+    public function updatePlayerNumber($playerNumber) : bool
     {
-        //todo: change existing this->left_at as current timestamp and add new UserRoom with -1
-        //todo: add saving to move history of a game
-        return false;
+        try {
+            $newRecord = new self();
+            $this->left_at = date("Y-m-d H:i:s");
+            $this->save();
+            $newRecord->id_user = $this->id_user;
+            $newRecord->id_room = $this->id_room;
+            $newRecord->player_number = $playerNumber;
+            $newRecord->insert();
+        } catch (\Exception|\Throwable $e) {
+            ob_start();
+            var_dump($e);
+            file_put_contents('/tmp/df.log', ob_get_clean() . PHP_EOL, FILE_APPEND);
+            return false;
+        }
+        ob_start();
+        var_dump('out');
+        file_put_contents('/tmp/df.log', ob_get_clean() . PHP_EOL, FILE_APPEND);
+        return true;
+    }
+
+//    public function makeSpectator() : bool
+//    {
+//        try {
+//            $newRecord = clone $this;
+//            $this->left_at = date("Y-m-d H:i:s");
+//            $this->save();
+//            $newRecord->player_number = self::SPECTATOR_NUMBER;
+//            $newRecord->save();
+//        } catch (\Exception|\Throwable $e) {
+//            return false;
+//        }
+//        return true;
+//    }
+
+    public static function getActivePlayerNumbers($roomId) : array
+    {
+        $playerNumbers = [];
+        try {
+            $playerNumbers = self::find()
+                ->where(['id_room' => $roomId])
+                ->andWhere(['left_at' => null])
+                ->andWhere(['<>', 'player_number', self::SPECTATOR_NUMBER])
+                ->orderBy(['player_number' => 'ASC'])
+                ->all();
+            $playerNumbers = array_map(function ($userRoom) {
+                return $userRoom->player_number;
+            }, $playerNumbers);
+        } catch (\Exception|\Throwable) {
+            throw new DBException();
+        }
+        return $playerNumbers;
     }
 }

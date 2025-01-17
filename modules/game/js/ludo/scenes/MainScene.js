@@ -1,4 +1,6 @@
 class MainScene extends BaseScene {
+    dice
+    board
     constructor () {
         super('MainScene')
     }
@@ -17,13 +19,17 @@ class MainScene extends BaseScene {
             'piece-red',
             'piece-green',
             'piece-yellow',
-
         ]) {
             this.load.image(
                 texture,
                 `/web-assets/game/ludo/${texture}.webp`
             );
         }
+        this.load.spritesheet('dice', '/web-assets/game/ludo/dice.webp', {
+            frameWidth: 57,
+            frameHeight: 57,
+            spacing: 0.25,
+        })
         // this.load.image(
         //     'board',
         //     '/web-assets/game/ludo/board.webp'
@@ -37,12 +43,13 @@ class MainScene extends BaseScene {
             this.sys.cameras.main.width / 2,
             this.sys.cameras.main.height / 2,
         )
+        this.dice = new Dice(this, boardCenter * 3, boardCenter)
+        this.sidebar = new Sidebar(this)
         this.board = new Board(this, boardCenter, boardCenter)
+        this.dice.handleVisibility();
+        // this.children.bringToTop(this.dice);
+        gameVars.refreshCallback = Board.setGameStateFromGameVars;
+        gameVars.board = this.board;
         roomFunctions.hideLoader();
-        // this.board = this.add.image(0,0, );
-        // this.board.setOrigin(0,0);
-        // console.log(this.board);
-        // console.log('MainScene');
-        // this.game.scene.start('MainScene')
     }
 }

@@ -24,6 +24,13 @@ class LudoAsset extends AssetBundle
 //        'scenes/LoadingScene.js',
         'scenes/MainScene.js',
 
+        'menu/Sidebar.js',
+        'menu/SeatWrapper.js',
+        'menu/Seat.js',
+        'menu/DiceTray.js',
+        'menu/Chat.js',
+        'menu/LeaveButton.js',
+
     ];
     public $depends = [
         'app\modules\game\assets\PhaserAsset',

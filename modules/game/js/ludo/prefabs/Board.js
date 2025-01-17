@@ -33,6 +33,7 @@ class Board extends Phaser.GameObjects.Sprite {
         scene.add.existing(this);
         this.initBoardSpaces();
         this.initYardSpaces();
+        this.initHomeSpaces();
         this.initPlayerPieces();
     }
 
@@ -62,7 +63,8 @@ class Board extends Phaser.GameObjects.Sprite {
             );
             i++;
         }
-        this.gameSpaces[i++] = new BoardSpace(
+
+        this.gameSpaces[i] = new BoardSpace(
             this.scene,
             this.x,
             this.y - 6 * this.squareSpaceSide,
@@ -71,6 +73,7 @@ class Board extends Phaser.GameObjects.Sprite {
             this.squareSpaceSide,
             i
         );
+        i++
         for (let j = 0; j < 6; j++) {
             this.gameSpaces[i] = new BoardSpace(
                 this.scene,
@@ -95,7 +98,7 @@ class Board extends Phaser.GameObjects.Sprite {
             );
             i++;
         }
-        this.gameSpaces[i++] = new BoardSpace(
+        this.gameSpaces[i] = new BoardSpace(
             this.scene,
             this.x + 6 * this.squareSpaceSide,
             this.y,
@@ -104,6 +107,7 @@ class Board extends Phaser.GameObjects.Sprite {
             this.squareSpaceSide,
             i
         );
+        i++;
         for (let j = 0; j < 6; j++) {
             this.gameSpaces[i] = new BoardSpace(
                 this.scene,
@@ -128,7 +132,7 @@ class Board extends Phaser.GameObjects.Sprite {
             );
             i++;
         }
-        this.gameSpaces[i++] = new BoardSpace(
+        this.gameSpaces[i] = new BoardSpace(
             this.scene,
             this.x,
             this.y + 6 * this.squareSpaceSide,
@@ -137,6 +141,7 @@ class Board extends Phaser.GameObjects.Sprite {
             this.squareSpaceSide,
             i
         );
+        i++;
         for (let j = 0; j < 6; j++) {
             this.gameSpaces[i] = new BoardSpace(
                 this.scene,
@@ -243,11 +248,95 @@ class Board extends Phaser.GameObjects.Sprite {
                 i + 12
             );
         }
+        Board.setGameStateFromGameVars(this);
+    }
+
+    initHomeSpaces() {
+        for (let i = 0; i < 4; i++) {
+            this.homeSpaces[0][i] = new BoardSpace(
+                this.scene,
+                this.x - (5 - i) * this.squareSpaceSide,
+                this.y,
+                this.gameScale,
+                BoardSpace.TYPE_SQUARE,
+                this.squareSpaceSide,
+                i + 100
+            );
+            this.homeSpaces[0][i].setColor('blue');
+
+            this.homeSpaces[1][i] = new BoardSpace(
+                this.scene,
+                this.x,
+                this.y - (5 - i) * this.squareSpaceSide,
+                this.gameScale,
+                BoardSpace.TYPE_SQUARE,
+                this.squareSpaceSide,
+                i + 100
+            );
+            this.homeSpaces[1][i].setColor('red');
+
+            this.homeSpaces[2][i] = new BoardSpace(
+                this.scene,
+                this.x + (5 - i) * this.squareSpaceSide,
+                this.y,
+                this.gameScale,
+                BoardSpace.TYPE_SQUARE,
+                this.squareSpaceSide,
+                i + 100
+            );
+            this.homeSpaces[2][i].setColor('green');
+
+            this.homeSpaces[3][i] = new BoardSpace(
+                this.scene,
+                this.x,
+                this.y + (5 - i) * this.squareSpaceSide,
+                this.gameScale,
+                BoardSpace.TYPE_SQUARE,
+                this.squareSpaceSide,
+                i + 100
+            );
+            this.homeSpaces[3][i].setColor('yellow');
+
+        }
     }
 
     resetPlayerPieceById(id) {
         this.playerPieces[id].resetSpaceUnderPiece();
         this.playerPieces[id].boardSpaceId = -1;
         this.playerPieces[id].setPosition(this.yardSpaces[id].x, this.yardSpaces[id].y);
+    }
+
+    static setGameStateFromGameVars(board) {
+        board.setBoardState(gameVars.boardState);
+        board.scene.dice.resetForcedResults();
+        for (const seat of board.scene.sidebar.seatWrapper.seats) {
+            seat.handleTaken();
+        }
+    }
+
+    setBoardState(boardState) {
+        if (boardState == null) {
+            return;
+        }
+        for (let playerIterator = 0; playerIterator < 4; playerIterator++) {
+            for (let pieceIterator = 0; pieceIterator < 4; pieceIterator++) {
+                if (boardState[playerIterator][pieceIterator] === -1) {
+                    this.resetPlayerPieceById(playerIterator * 4 + pieceIterator);
+                } else if (boardState[playerIterator][pieceIterator] >= 100) {
+                    this.playerPieces[playerIterator * 4 + pieceIterator]
+                        .setOnSpace(
+                            this.homeSpaces[playerIterator][boardState[playerIterator][pieceIterator] - 100],
+                            false
+                        );
+                }
+                else {
+                    this.playerPieces[playerIterator * 4 + pieceIterator]
+                        .setOnSpace(
+                            this.gameSpaces[boardState[playerIterator][pieceIterator]],
+                            false
+                        );
+                }
+            }
+        }
     }
 }
