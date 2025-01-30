@@ -21,7 +21,7 @@ $pathingRules = [
     '/logout' => 'user/authentication/logout',
     '/signup' => 'user/authentication/signup',
     '/profile/<id:\d+>' => 'user/management/profile',
-    '/profile/edit/<id:\d+>' => 'user/management/editProfile',
+    '/profile/edit/<id:\d+>' => 'user/management/edit-profile',
     '/chat/<action:[\w-]+>' => 'chat/default/<action>',
 
     '/game/<controller:\w+>/<action:\w+>' => 'game/<controller>/<action>',

@@ -3,13 +3,26 @@
 namespace app\modules\game\models;
 
 use app\models\exceptions\DBException;
+use app\models\exceptions\NoSuchGameTypeException;
+use app\modules\game\models\base\BaseGameType;
 use Yii;
 use yii\db\ActiveRecord;
-use yii\web\HttpException;
+use yii\db\Expression;
 
 class UserRoom extends \app\models\generated\UserRoom
 {
     const SPECTATOR_NUMBER = -1;
+
+    public static function getPlayerCurrentRoomConnections($userId, $onlyIfPlayer = false)
+    {
+        $query = UserRoom::find()
+            ->where(['id_user' => $userId])
+            ->andWhere(['left_at' => null]);
+        if ($onlyIfPlayer) {
+            $query->andWhere(['<>', 'player_number', self::SPECTATOR_NUMBER]);
+        }
+        return $query->all();
+    }
 
     public function attributeLabels()
     {
@@ -23,12 +36,15 @@ class UserRoom extends \app\models\generated\UserRoom
         );
     }
 
-    public static function getPlayerCurrentRoomConnection($userId) : null|ActiveRecord
+    public static function getPlayerCurrentRoomConnection($userId, $onlyIfPlayer = false) : null|ActiveRecord
     {
-        return UserRoom::find()
+        $query = UserRoom::find()
             ->where(['id_user' => $userId])
-            ->andWhere(['left_at' => null])
-            ->one();
+            ->andWhere(['left_at' => null]);
+        if ($onlyIfPlayer) {
+            $query->andWhere(['<>', 'player_number', self::SPECTATOR_NUMBER]);
+        }
+        return $query->one();
     }
 
     public static function playerJoinedRoom($userId, $roomId) : bool
@@ -107,14 +123,8 @@ class UserRoom extends \app\models\generated\UserRoom
             $newRecord->player_number = $playerNumber;
             $newRecord->insert();
         } catch (\Exception|\Throwable $e) {
-            ob_start();
-            var_dump($e);
-            file_put_contents('/tmp/df.log', ob_get_clean() . PHP_EOL, FILE_APPEND);
             return false;
         }
-        ob_start();
-        var_dump('out');
-        file_put_contents('/tmp/df.log', ob_get_clean() . PHP_EOL, FILE_APPEND);
         return true;
     }
 
@@ -136,10 +146,10 @@ class UserRoom extends \app\models\generated\UserRoom
     {
         $playerNumbers = [];
         try {
-            $playerNumbers = self::find()
+            $playerNumbers = static::find()
                 ->where(['id_room' => $roomId])
                 ->andWhere(['left_at' => null])
-                ->andWhere(['<>', 'player_number', self::SPECTATOR_NUMBER])
+                ->andWhere(['<>', 'player_number', static::SPECTATOR_NUMBER])
                 ->orderBy(['player_number' => 'ASC'])
                 ->all();
             $playerNumbers = array_map(function ($userRoom) {
@@ -149,5 +159,40 @@ class UserRoom extends \app\models\generated\UserRoom
             throw new DBException();
         }
         return $playerNumbers;
+    }
+
+    public static function leaveAllRooms($id)
+    {
+        $allRoomConnections = UserRoom::getPlayerCurrentRoomConnections($id, true);
+        /** @var UserRoom $roomConnection */
+        foreach ($allRoomConnections as $roomConnection) {
+            self::leaveRoom($roomConnection);
+        }
+        return true;
+    }
+
+    public static function leaveRoom(UserRoom $userRoom)
+    {
+        if ($userRoom->player_number !== UserRoom::SPECTATOR_NUMBER) {
+            $room = Room::getById($userRoom->id_room);
+            try {
+                /** @var BaseGameType $model */
+                $model = new (GameTypes::GAME_TYPE_MAP[$room->game_type])(
+                    $userRoom->player_number,
+                    UserRoom::getActivePlayerNumbers($userRoom->id_room),
+                    $room
+                );
+            } catch (\Throwable|\Exception $e) {
+                throw new NoSuchGameTypeException();
+            }
+            try {
+                $model->handlePlayerLeaveHistory($userRoom->player_number);
+                $model->updateRoom();
+                $userRoom->left_at = new Expression('CURRENT_TIMESTAMP');
+                $userRoom->update();
+            } catch (\Throwable|\Exception $e) {
+                throw $e;
+            }
+        }
     }
 }

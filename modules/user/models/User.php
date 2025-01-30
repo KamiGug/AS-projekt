@@ -4,6 +4,7 @@ namespace app\modules\user\models;
 
 use app\modules\user\models\Authentication\Role;
 use Yii;
+use yii\db\ActiveQuery;
 use yii\web\IdentityInterface;
 
 class User extends \app\models\generated\User implements IdentityInterface
@@ -12,8 +13,10 @@ class User extends \app\models\generated\User implements IdentityInterface
     const SCENARIO_EDIT_SELF = 'self-edit';
     const SCENARIO_EDIT_ADMIN = 'admin-edit';
     const SCENARIO_PROFILE_SHOW = 'show-profile';
+    const LIST_COUNT_PER_PAGE_DEFAULT = 20;
 
     public string $confirmPassword = '';
+    public string $oldPassword = '';
 
     public function rules()
     {
@@ -26,15 +29,21 @@ class User extends \app\models\generated\User implements IdentityInterface
                     'password',
                     'compare',
                     'compareAttribute' => 'confirmPassword',
-                    'on' => self::SCENARIO_SIGNUP,
+                    'on' => [self::SCENARIO_SIGNUP, self::SCENARIO_EDIT_SELF],
                     'message' => \Yii::t('app', 'Passwords must match'),
                 ],
 
                 [['confirmPassword'], 'required', 'on' => self::SCENARIO_SIGNUP],
-                [$this->attributes(), 'match',
-                    'pattern' => '/^[^<>"\'%;()&]*$/',
-                    'message' => 'The {attribute} contains invalid characters.',
-                ],
+//                [$this->attributes(), 'filter', 'filter' => [static::class, 'sanitizeCharacters'] ],
+                [['oldPassword'], 'required', 'on' => self::SCENARIO_EDIT_SELF],
+                [['oldPassword'], function ($attribute, $params, $validator) {
+                    if ($this->validatePassword(
+                        $this->$attribute,
+                        $this->getPasswordHash()
+                    ) === false) {
+                        $this->addError($attribute, \Yii::t('app', 'Incorrect password'));
+                    }
+                }, 'on' => self::SCENARIO_EDIT_SELF],
             ]
         );
     }
@@ -54,8 +63,18 @@ class User extends \app\models\generated\User implements IdentityInterface
                     'visible_name',
                     'role'
                 ],
-                self::SCENARIO_EDIT_SELF => ['username', 'password', 'visible_name'],
-                self::SCENARIO_EDIT_ADMIN => ['username', 'password', 'email', 'visible_name', 'role'],
+                self::SCENARIO_EDIT_ADMIN => ['username', 'email', 'visible_name', 'role'],
+                self::SCENARIO_EDIT_SELF => [
+                    'username',
+                    'password',
+                    'confirmPassword',
+                    'email',
+                    'visible_name',
+                    ...(Yii::$app->user->getIdentity()?->role === Role::ROLE_ADMINISTRATOR
+                    ? ['role']
+                    : ['oldPassword']
+                    ),
+                ],
                 self::SCENARIO_PROFILE_SHOW => ['visible_name'],
             ]
         );
@@ -71,8 +90,14 @@ class User extends \app\models\generated\User implements IdentityInterface
                 'password' => Yii::t('app', 'Password'),
                 'visible_name' => Yii::t('app', 'Nickname'),
                 'confirmPassword' => Yii::t('app', 'Confirm Password'),
+                'created_at' => Yii::t('app', 'Account creation date'),
             ]
         );
+    }
+
+    public static function sanitizeCharacters($value)
+    {
+        return htmlspecialchars($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     }
 
     public function getAuthKey() : string {
@@ -103,10 +128,17 @@ class User extends \app\models\generated\User implements IdentityInterface
         return static::findOne(['username' => $field]) ?? static::findOne(['email' => $field]);
     }
 
-    public function validatePassword($password) : bool {
+    public static function getIdsByVisibleNameLike($visibleName) : ActiveQuery|array
+    {
+        return array_map(function($arg) {
+            return $arg?->id;
+        }, static::find()->where(['like', 'visible_name', $visibleName])->all());
+    }
+
+    public function validatePassword($password, $passwordHash = null) : bool {
         return Yii::$app->getSecurity()->validatePassword(
             $password,
-            $this->password
+            $passwordHash ?? $this->password
         );
     }
 
@@ -127,11 +159,25 @@ class User extends \app\models\generated\User implements IdentityInterface
 
     public function beforeSave($insert) : bool
     {
-        if (parent::beforeSave($insert)) {
-            $this->password = Yii::$app->getSecurity()->generatePasswordHash($this->password);
-            return true;
+        if (parent::beforeSave($insert) === false) {
+            return false;
         }
-        return false;
+        $sanitizeBeforeHashCheckAttributes = array_diff(
+            array_keys($this->attributes), ['password', 'confirmPassword']
+        );
+        foreach ($sanitizeBeforeHashCheckAttributes as $attribute) {
+            $this->$attribute = static::sanitizeCharacters($this->$attribute);
+        }
+        $this->modified_by = Yii::$app->user->getIdentity()?->getId();
+        $passwordChanged = $this->password !== $this->getPasswordHash();
+        $this->modified_by = Yii::$app->getUser()?->getId() ?? null;
+        if ($this->validate(null, false) === false) {
+            return false;
+        }
+        if ($passwordChanged) {
+            $this->password = Yii::$app->getSecurity()->generatePasswordHash($this->password);
+        }
+        return true;
     }
 
     public static function getRole($userId) : string|null {
@@ -161,4 +207,30 @@ class User extends \app\models\generated\User implements IdentityInterface
 //            return Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600*24*30 : 0);
 //        }
 //    }
+    public function getPasswordHash() : string|null
+    {
+        try {
+            $passHash = static::find()
+                ->select('password')
+                ->where(['id' => $this->id])
+                ->one()->password;
+        } catch (\Exception|\Throwable $e) {
+            return null;
+        }
+        return $passHash ?? null;
+    }
+
+    public function fillWithNonEmptyAttributes(User $updateFromModel) : bool
+    {
+        foreach ($updateFromModel->attributes as $attribute => $value) {
+            if (
+                isset($value)
+                && is_string($value)
+                && strlen($value) > 0
+            ) {
+                $this->{$attribute} = $value;
+            }
+        }
+        return false;
+    }
 }

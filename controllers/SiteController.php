@@ -3,7 +3,9 @@
 namespace app\controllers;
 
 use app\modules\user\models\Authentication\AccessControl;
+use app\modules\user\models\Authentication\BanType;
 use app\modules\user\models\Authentication\Role;
+use app\modules\user\models\Ban\Ban;
 use Yii;
 use yii\web\Controller;
 
@@ -74,5 +76,22 @@ class SiteController extends Controller
                 'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
             ],
         ];
+    }
+
+    public function beforeAction($action)
+    {
+        if (parent::beforeAction($action) === false) {
+            return false;
+        }
+        $user = Yii::$app->user?->getIdentity();
+        if (
+            Yii::$app->user->isGuest === false
+            && $action->actionMethod !== 'actionBanned'
+            && $user->role !== Role::ROLE_ADMINISTRATOR
+            && Ban::isUserCurrentlyBanned($user->id, BanType::BAN_TYPE_ALL)
+        ) {
+            return $this->redirect(['/user/ban/banned']);
+        }
+        return true;
     }
 }

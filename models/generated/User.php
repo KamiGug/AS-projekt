@@ -18,6 +18,8 @@ use Yii;
  * @property string|null $created_at
  * @property int|null $created_by
  *
+ * @property Ban[] $bans
+ * @property Ban[] $bans0
  * @property ChatParticipant[] $chatParticipants
  * @property Chat[] $chats
  * @property User $createdBy
@@ -76,6 +78,26 @@ class User extends \yii\db\ActiveRecord
             'created_at' => 'Created At',
             'created_by' => 'Created By',
         ];
+    }
+
+    /**
+     * Gets query for [[Bans]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getBans()
+    {
+        return $this->hasMany(Ban::class, ['id_user' => 'id']);
+    }
+
+    /**
+     * Gets query for [[Bans0]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getBans0()
+    {
+        return $this->hasMany(Ban::class, ['issued_by' => 'id']);
     }
 
     /**
