@@ -17,9 +17,7 @@ use app\modules\game\models\Room;
 use app\modules\game\models\RoomList;
 use app\modules\game\models\UserRoom;
 use app\modules\user\models\Authentication\Role;
-use Faker\Provider\Base;
 use Yii;
-use yii\helpers\Url;
 use yii\web\HttpException;
 use yii\web\Response;
 
@@ -129,25 +127,7 @@ class RoomController extends SiteController
             throw new NotInTheChosenRoomException();
         }
         /** @var UserRoom $userRoom */
-        if ($userRoom->player_number !== UserRoom::SPECTATOR_NUMBER) {
-            $room = Room::getById($id);
-            try {
-                /** @var BaseGameType $model */
-                $model = new (GameTypes::GAME_TYPE_MAP[$room->game_type])(
-                    $userRoom->player_number,
-                    UserRoom::getActivePlayerNumbers($id),
-                    $room
-                );
-            } catch (\Throwable|\Exception $e) {
-                throw new NoSuchGameTypeException();
-            }
-            try {
-                $model->handlePlayerLeaveHistory($userRoom->player_number);
-                $model->updateRoom();
-            } catch (\Throwable|\Exception $e) {
-                throw $e;
-            }
-        }
+        UserRoom::leaveRoom($userRoom);
         return $userRoom->removePlayerFromRoom()
             ? json_encode([
                 'message' => 'successfully left the room'

@@ -11,7 +11,6 @@ class GameTypes
     const TYPE_LUDO = 'ludo';
 
     const array GAME_TYPE_MAP = [
-        GameTypes::TYPE_BASE => BaseGameType::class,
         GameTypes::TYPE_LUDO => LudoGameType::class,
     ];
 }

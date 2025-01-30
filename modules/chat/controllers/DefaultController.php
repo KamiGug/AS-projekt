@@ -11,7 +11,6 @@ class DefaultController extends SiteController
     protected $allowedRoles = ['admin'];
     public function actionIndex()
     {
-//        var_dump('asdasd');die;
         return $this->render('index');
     }
 
