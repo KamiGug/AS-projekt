@@ -1,7 +1,7 @@
 const listTemplates = {}
 const listVars = {
     lastRefresh: null,
-    itemCount: 25,
+    itemCount: 10,
     currentPage: 0,
 }
 
@@ -37,63 +37,116 @@ const buildListFunctions = {
         listTemplates.listFooter = response?.listFooter;
     },
     buildList: () => {
-        const listTemplate = $(listTemplates.listTemplate ?? '<div>').appendTo($('#game-wrapper'));
-        listTemplate.children('#room-list-bar').replaceWith($(listTemplates?.listBar ?? '<div>'));
-        listTemplate.children('#room-list-wrapper').replaceWith($(listTemplates?.listPartial ?? '<div>'));
-        listTemplate.children('#room-list-footer').replaceWith($(listTemplates?.listFooter ?? '<div>'));
-        buildListFunctions.fillList();
+        let view = listTemplates.listTemplate;
+        let newView;
+        while (true) {
+            newView = roomFunctions.fillView(view, listTemplates);
+            if (view === newView) break;
+            view = newView;
+        }
+        $(view).appendTo($('#game-wrapper'));
+        $('#room-search-btn').on('click', (e) => {
+            buildListFunctions.sendChangeList(e);
+        })
+
+        //todo: add event listener to the refresh button
+        $('#room-search-btn').on('click', (e) => {
+            buildListFunctions.refreshList(e);
+        })
+
+        buildListFunctions.initialFillList();
         roomFunctions.hideLoader();
     },
-    fillList: (page = 0) => {
+    fillList: (rooms) => {
+        buildListFunctions.clearList();
+        const listWrapper = $('#room-list-wrapper');
+        if (rooms.length < 1) {
+            $(listTemplates.emptyMessage ?? '<div>').appendTo(listWrapper);
+            return;
+        }
+        for (const room of rooms) {
+            buildListFunctions.appendListenerToListElement(
+                $(roomFunctions.fillView(listTemplates.elementPartial, room)).appendTo(listWrapper)
+            );
+        }
+    },
+    appendListenerToListElement: (element) => {
+        element.on('click', (e) => {
+            const wrapper = $(e.target).closest('.room-list-element')
+            gameFunctions.joinGame(wrapper.data('id'));
+        })
+    },
+    initialFillList: () => {
         $.ajax({
             url: '/game/room/list',
             type: 'POST',
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             data: JSON.stringify({
-                pageNumber: page,
+                pageNumber: listVars.currentPage,
                 itemCount: listVars.itemCount,
                 timestamp: listVars.lastRefresh,
                 sortOrder: null,
             }),
             success: function(response) {
-                buildListFunctions.clearList();
-                const listWrapper = $('#room-list-wrapper');
-                if (response.rooms.length < 1) {
-                    $(listTemplates.emptyMessage ?? '<div>').appendTo(listWrapper);
-                    return;
-                }
-                buildListFunctions.setUpPagination(response.page, response.pageCount)
-                for (const room of response.rooms) {
-                    $(roomFunctions.fillView(listTemplates.elementPartial, room))
-                        .appendTo(listWrapper)
-                        .on('click', (e) => {
-                            gameFunctions.joinGame(e.target.dataset?.id);
-                        });
-                }
-                // use the listVars.listWrapper
-                // buildListFunctions.buildList(response)
+                listVars.timestamp = response.timestamp
+                buildListFunctions.fillVars(response)
+                buildListFunctions.fillList(response.rooms)
+                buildListFunctions.setUpPagination()
             },
             error: () => {
                 setTimeout(() => {
-                    buildListFunctions.fillList(page);
+                    buildListFunctions.initialFillList();
                 }, 1000)
             },
         });
     },
+    sendChangeList: (e = null) => {
+        e?.preventDefault();
+        roomFunctions.showLoader();
+        const form = $('#room-search-form');
+        form.append(`<input id="soon-to-be-removed-hidden-field-for-timestamp type="hidden" name="timestamp" value="${listVars.timestamp ?? null}"` )
+        const formData = form.serialize();
+        $('#soon-to-be-removed-hidden-field-for-timestamp').remove()
+
+        const urlSearchParams = new URLSearchParams();
+        if (listVars.itemCount != null) urlSearchParams.append('count', listVars.itemCount);
+        if (listVars.currentPage != null) urlSearchParams.append('page', listVars.currentPage);
+        $.ajax({
+            url: "/game/room/list?" + urlSearchParams.toString(),
+            type: "POST",
+            data: formData,
+            dataType: "json",
+            success: function(response) {
+                    listVars.timestamp = response.timestamp
+                    buildListFunctions.fillVars(response)
+                    buildListFunctions.fillList(response.rooms)
+                    buildListFunctions.setUpPagination()
+                    roomFunctions.hideLoader();
+            },
+            error: function() {
+            }
+        });
+    },
+    fillVars: (response) => {
+        listVars.currentPage = response.page;
+        listVars.timestamp = response.timestamp;
+        listVars.pageCount = response.pageCount
+    },
     // todo: finish setUpPagination
-    setUpPagination: (pageNumber, pageCount) => {
+    setUpPagination: () => {
         console.log('todo: finish setUpPagination')
-        console.log('pageNumber', pageNumber)
-        console.log('pageCount', pageCount)
+        console.log('currentPage', 'currentPage')
+        console.log('pageCount', 'pageCount')
     },
     clearList: () => {
         $('#room-list-wrapper').empty();
     },
-    refreshList: () => {
+    refreshList: (e) => {
+        e?.preventDefault();
         roomFunctions.showLoader();
         listVars.lastRefresh = null;
-        buildListFunctions.fillList()
+        buildListFunctions.sendChangeList()
         roomFunctions.hideLoader();
     }
 }

@@ -4,8 +4,4 @@
 
 ?>
 
-<div id="room-list-template">
-    <div id="room-list-bar"></div>
-    <div id="room-list-wrapper"></div>
-    <div id="room-list-footer"></div>
-</div>
+<div id="room-list-template">${listBar}${listPartial}${listFooter}</div>

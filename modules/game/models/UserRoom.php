@@ -195,4 +195,24 @@ class UserRoom extends \app\models\generated\UserRoom
             }
         }
     }
+
+    public static function getActivePlayerNamesAndNumbersFromRooms(array $roomIds)
+    {
+        $query = self::find()
+            ->joinWith('user')
+            ->select([
+                'User_Room.*',
+                'User.visible_name'
+            ])
+            ->where(['User_Room.left_at' => null])
+            ->andWhere(['<>', 'User_Room.player_number', self::SPECTATOR_NUMBER])
+            ->andWhere(['in', 'User_Room.id_room', $roomIds]);
+
+        $result = [];
+        $queryResult = $query->all();
+        foreach ($queryResult as $userRoom) {
+            $result[$userRoom->id_room][$userRoom->player_number] = $userRoom->user->visible_name;
+        }
+        return $result;
+    }
 }

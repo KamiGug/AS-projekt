@@ -32,20 +32,39 @@
 
 }
 
+.room-list-element-wrapper {
+    width: 100%;
+    padding: 2px 5px 3px 7px;
+}
+
 .room-list-element.list {
     width: 100%;
-    background-color: #f0f0d0;
-    border-width: 0 1px 1px 1px;
-    border-color: black;
-    border-style: solid;
+    padding: 10px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
 }
 
-.room-list-element.list:first-child {
-    border-width: 1px;
+.room-list-element.list>.list-item-content {
+    display: flex;
+    align-items: center;
+    width: 100%;
 }
 
-.room-list-element.list:nth-child(even) {
-    background-color: #d0f0f0;
+.room-list-element.list>.list-item-content>.list-item-name {
+    flex-grow: 1;
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.room-list-element.list>.list-item-content>.list-item-gameType,
+.room-list-element.list>.list-item-content>.list-item-createdAt
+{
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.room-list-element.list>.list-item-content>.list-item-createdAt {
+    font-style: italic;
 }
 
 
