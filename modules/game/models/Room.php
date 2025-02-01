@@ -4,18 +4,32 @@ namespace app\modules\game\models;
 
 use app\models\DBDate;
 use \app\models\generated\Room as Base;
+use app\modules\user\models\User;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\web\HttpException;
-use function PHPUnit\Framework\throwException;
 
 class Room extends Base
 {
+    const SCENARIO_CREATE = 'create';
+    const ROOM_LIST_PAGE_DEFAULT_LENGTH = 10;
+
+    public function init()
+    {
+        parent::init();
+        if ($this->isNewRecord) {
+            //todo: create chat
+            $this->current_player_number = UserRoom::SPECTATOR_NUMBER;
+        }
+    }
+
     public function rules()
     {
         return array_merge(
             parent::rules(),
             [
+                ['game_type', 'in', 'range' => array_keys(GameTypes::GAME_TYPE_MAP)],
+                ['name', 'string'],
 //                ['email', 'email', 'message' => Yii::t('app', 'Invalid email')],
 //                [
 //                    'password',
@@ -34,6 +48,7 @@ class Room extends Base
         return array_merge(
             parent::scenarios(),
             [
+                self::SCENARIO_CREATE => ['name', 'game_type', ]
 //                self::SCENARIO_LOGIN => ['username', 'password'],
 //                self::SCENARIO_SIGNUP => [
 //                    'id',
@@ -69,81 +84,6 @@ class Room extends Base
     /**
      * @throws HttpException
      */
-    public static function getPageCount($itemCountPerPage) : null|int
-    {
-        $itemCount = null;
-        try {
-            $itemCount = self::find()
-                ->where(['finished_at' => null])
-                ->count();
-        } catch (\Throwable|\Exception) {
-            $itemCount = null;
-        }
-        if ($itemCount === null) {
-            throw new HttpException(500, 'The database is temporarily unresponsive.');
-        }
-        return $itemCount / $itemCountPerPage + ($itemCount % $itemCountPerPage === 0 ? 0 : 1);
-    }
-
-    // $page - page number passed in the argument assumes pages numbered [1..N] (intuitive); N - pageCount
-    // pages are numbered [0..N-1] (programmatically simpler); N - pageCount
-    // timestamp is passed as to avoid refreshing room list on changing page
-    // (like changing page and having only page number change on a rare occasion)
-    public static function getRoomsPage($page, $itemCount, $timestamp = null, $sortOrder = null) : array|null
-    {
-        if ($timestamp === null) {
-            $timestamp = DBDate::getCurrentDate();
-        }
-        $maxPageCount = self::getPageCount($itemCount);
-        if ($maxPageCount === 0) {
-            return [
-                'rooms' => [],
-                'timestamp' => $timestamp,
-                'page' => 1,
-            ];
-        }
-        if ($page < 1) {
-            $page = 0;
-        } else {
-            if ($page >= $maxPageCount) {
-                $page = $maxPageCount - 1;
-            } else {
-                $page--;
-            }
-        }
-
-        $rooms = self::find()
-            ->where(['finished_at' => null])
-            ->where(['<', 'created_at', $timestamp])
-            ->offset($page * $itemCount)
-            ->limit($itemCount)
-            ->all();
-//            ->count();
-
-
-
-
-        return [
-            'rooms' => array_map(function ($item) {
-                return $item->prepareForList();
-            }, $rooms),
-            'timestamp' => $timestamp,
-            'page' => $page + 1,
-            'pageCount' => $maxPageCount,
-        ];
-    }
-
-    //todo: add some sort of $sortOrderToArgument
-
-    public function prepareForList() : array
-    {
-        return [
-            'id' => $this->id,
-            'gameType' => $this->game_type,
-            'createdAt' => $this->created_at,
-            'createdBy' => $this->created_by,
-        ];
-    }
 
     public function playerJoined($userId) : bool
     {
@@ -172,5 +112,10 @@ class Room extends Base
             return true;
         }
         return UserRoom::addUserToRoom($userId, $this->id);
+    }
+
+    public function getPlayers()
+    {
+        return $this->hasMany(User::class, ['id' => 'id_user'])->via('userRooms');
     }
 }

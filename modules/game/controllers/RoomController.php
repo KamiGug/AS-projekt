@@ -15,9 +15,11 @@ use app\modules\game\models\ludo\LudoGameType;
 use app\modules\game\models\GameTypes;
 use app\modules\game\models\Room;
 use app\modules\game\models\RoomList;
+use app\modules\game\models\RoomSearch;
 use app\modules\game\models\UserRoom;
 use app\modules\user\models\Authentication\Role;
 use Yii;
+use yii\web\Cookie;
 use yii\web\HttpException;
 use yii\web\Response;
 
@@ -57,22 +59,45 @@ class RoomController extends SiteController
         ]);
     }
 
-    public function actionList() //$page = 0, $itemCount = 25
+    public function actionList($count = null, $page = null)
     {
         if (!Yii::$app->request->isAjax) {
             return $this->redirect('/');
         }
-        $body = json_decode($this->request->getRawBody(), true);
-        if (!isset($body['pageNumber'])) $body['pageNumber'] = 0;
-        if (!isset($body['itemCount'])) $body['itemCount'] = 25;
-        if (!isset($body['timestamp'])) $body['timestamp'] = null;
-        if (!isset($body['sortOrder'])) $body['sortOrder'] = null;
-        return json_encode(Room::getRoomsPage(
-            $body['pageNumber'],
-            $body['itemCount'],
-            $body['timestamp'],
-            $body['sortOrder']
-        ));
+        if (isset($page)) {
+            $page = (int) $page;
+        } else {
+            $page = 0;
+        }
+        if ($count !== null) {
+            $count = (int) $count;
+            if ($count < 1) {
+                $count = Room::ROOM_LIST_PAGE_DEFAULT_LENGTH;
+            }
+            if (Yii::$app->request->cookies->getValue('countPerPageRoomList') != $count) {
+                Yii::$app->response->cookies->add(new Cookie([
+                    'name' => 'countPerPageRoomList',
+                    'value' => $count,
+                ]));
+            }
+        } else {
+            if (Yii::$app->request->cookies->has('countPerPageRoomList') === false) {
+                Yii::$app->response->cookies->add(new Cookie([
+                    'name' => 'countPerPageProfiles',
+                    'value' => Room::ROOM_LIST_PAGE_DEFAULT_LENGTH,
+                ]));
+                $count = Room::ROOM_LIST_PAGE_DEFAULT_LENGTH;
+            } else {
+                $count = (int) Yii::$app->request->cookies->getValue('countPerPageRoomList');
+            }
+        }
+        $model = new RoomSearch;
+        $model->load($this->request->post())
+            && $model->itemCount = $count
+            && $model->pageNumber = $page
+            && $model->validate();
+
+        return json_encode($model->search());
     }
 
     //Join a room

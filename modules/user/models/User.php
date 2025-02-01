@@ -32,7 +32,18 @@ class User extends \app\models\generated\User implements IdentityInterface
                     'on' => [self::SCENARIO_SIGNUP, self::SCENARIO_EDIT_SELF],
                     'message' => \Yii::t('app', 'Passwords must match'),
                 ],
-
+                ['password', 'string', 'min' => 6, 'max' => 20],
+                ['password', function ($attribute, $params, $validator) {
+                    if (!preg_match('/[a-z]/', $this->$attribute)) {
+                        $this->addError($attribute, 'Password must contain at least one lowercase letter.');
+                    }
+                    if (!preg_match('/[A-Z]/', $this->$attribute)) {
+                        $this->addError($attribute, 'Password must contain at least one uppercase letter.');
+                    }
+                    if (!preg_match('/\d/', $this->$attribute)) {
+                        $this->addError($attribute, 'Password must contain at least one digit.');
+                    }
+                }],
                 [['confirmPassword'], 'required', 'on' => self::SCENARIO_SIGNUP],
 //                [$this->attributes(), 'filter', 'filter' => [static::class, 'sanitizeCharacters'] ],
                 [['oldPassword'], 'required', 'on' => self::SCENARIO_EDIT_SELF],
