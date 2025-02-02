@@ -96,7 +96,6 @@ const gameFunctions = {
         gameVars.takenSeats = null;
     },
     quitGame: (id) => {
-
         $.ajax({
             url: '/game/room/leave?id=' + id,
             type: 'POST',

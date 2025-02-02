@@ -25,7 +25,7 @@ use yii\web\Response;
 
 class RoomController extends SiteController
 {
-//    protected $allUsersActions = ['rejoin'];
+//    protected $allUsersActions = ['list'];
 
 //    protected $guestActions = ['join'];
 
@@ -39,7 +39,6 @@ class RoomController extends SiteController
 
     public function actionInitList()
     {
-        //todo: add cookie with default settings
         if (!Yii::$app->request->isAjax) {
             return $this->redirect('/');
         }
@@ -55,21 +54,22 @@ class RoomController extends SiteController
             'listTemplate' => $this->renderPartial('list/template'),
             'listBar' => $this->renderPartial('list/bar'),
             'emptyMessage' => $this->renderPartial('list/empty'),
-            'listFooter' => $this->renderPartial('list/footer')
+            'listFooter' => $this->renderPartial('list/footer'),
+            'paginationElementEnabled' => $this->renderPartial('list/_partials/_pagination-element-enabled'),
+            'paginationElementDisabled' => $this->renderPartial('list/_partials/_pagination-element-disabled'),
         ]);
     }
 
-    public function actionList($count = null, $page = null)
+    public function actionList($page = null)
     {
         if (!Yii::$app->request->isAjax) {
             return $this->redirect('/');
         }
-        if (isset($page)) {
-            $page = (int) $page;
-        } else {
-            $page = 0;
-        }
-        if ($count !== null) {
+        $page = (int) $page;
+        $model = new RoomSearch;
+        $model->load($this->request->post());
+        $count = $model->itemCount;
+        if ($count !== null && strlen( (string) $count)) {
             $count = (int) $count;
             if ($count < 1) {
                 $count = Room::ROOM_LIST_PAGE_DEFAULT_LENGTH;
@@ -92,12 +92,29 @@ class RoomController extends SiteController
             }
         }
         $model = new RoomSearch;
-        $model->load($this->request->post())
-            && $model->itemCount = $count
-            && $model->pageNumber = $page
-            && $model->validate();
+        $model->load($this->request->post());
+        $model->itemCount = $count;
+        $model->pageNumber = $page;
+        $model->validate();
+        $model->validate('timestamp', false);
 
         return json_encode($model->search());
+    }
+
+    public function actionNew()
+    {
+        if (!Yii::$app->request->isAjax) {
+            return $this->redirect('/');
+        }
+        $room = new Room();
+        $room->load($this->request->post());
+        if ($room->validate() && $room->save()) {
+            Yii::$app->session->setFlash('success', 'Successfully created a room');
+        } else {
+            Yii::$app->session->setFlash('error', 'An error has occurred while creating a room.');
+        }
+        $room->join(Yii::$app->user->getId());
+        return json_encode(['id' => $room->id]);
     }
 
     //Join a room

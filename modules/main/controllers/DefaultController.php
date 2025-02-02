@@ -3,11 +3,13 @@
 namespace app\modules\main\controllers;
 
 use app\controllers\SiteController;
+use app\models\DBDate;
 use app\modules\user\models\Authentication\Role;
+use yii\web\HttpException;
 
 class DefaultController extends SiteController
 {
-    protected $allUsersActions = ['index'];
+    protected $allUsersActions = ['index', 'test'];
     protected $guestActions = ['contact'];
     protected $allowedRoles = [Role::ROLE_ADMINISTRATOR];
     public function actionIndex()
@@ -23,5 +25,11 @@ class DefaultController extends SiteController
     public function actionContact()
     {
         return $this->render('contact');
+    }
+
+    public function actionTest()
+    {
+        throw new HttpException(403);
+        return ob_get_clean();
     }
 }

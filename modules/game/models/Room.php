@@ -1,7 +1,6 @@
 <?php
 
 namespace app\modules\game\models;
-
 use app\models\DBDate;
 use \app\models\generated\Room as Base;
 use app\modules\user\models\User;
@@ -20,6 +19,8 @@ class Room extends Base
         if ($this->isNewRecord) {
             //todo: create chat
             $this->current_player_number = UserRoom::SPECTATOR_NUMBER;
+            $this->seed = rand();
+            $this->game_history = '[]';
         }
     }
 
@@ -29,7 +30,8 @@ class Room extends Base
             parent::rules(),
             [
                 ['game_type', 'in', 'range' => array_keys(GameTypes::GAME_TYPE_MAP)],
-                ['name', 'string'],
+                ['name', 'string', 'min' => 3],
+                [['name', 'game_type'], 'safe'],
 //                ['email', 'email', 'message' => Yii::t('app', 'Invalid email')],
 //                [
 //                    'password',
@@ -48,7 +50,7 @@ class Room extends Base
         return array_merge(
             parent::scenarios(),
             [
-                self::SCENARIO_CREATE => ['name', 'game_type', ]
+                self::SCENARIO_CREATE => ['name', 'game_type']
 //                self::SCENARIO_LOGIN => ['username', 'password'],
 //                self::SCENARIO_SIGNUP => [
 //                    'id',

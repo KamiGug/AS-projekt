@@ -26,7 +26,15 @@ class RoomSearch extends Room
                 [['sort'], 'string'],
                 [['pageNumber', 'itemCount'], 'integer'],
                 [['pageNumber', 'itemCount'], 'required'],
-                [['timestamp'], 'date'],
+                [['timestamp'], function ($attribute, $params, $validator) {
+                    if (
+                        $this->$attribute == null
+                        || strlen($this->$attribute) === 0
+                        || DBDate::validateDate($this->$attribute) === false
+                    ) {
+                        $this->$attribute = DBDate::getCurrentDate();
+                    }
+                }, 'skipOnEmpty' => false],
                 [['sort', 'pageNumber', 'itemCount', 'timestamp', 'game_type', 'userPlaying'], 'safe'],
                 ['pageNumber', function ($attribute, $params, $validator) {
                         if (isset($params['maxPageCount']) === false) {
@@ -70,25 +78,14 @@ class RoomSearch extends Room
                 'name',
                 'pageNumber',
                 'itemCount',
+                'timestamp',
                 'sort'
             ]
         ];
     }
 
-//    public function attributeLabels()
-//    {
-//        return array_merge(
-//            parent::rules(),
-//            [
-//            ]
-//        );
-//    }
-
     public function search()
     {
-        if ($this->timestamp === null) {
-            $this->timestamp = DBDate::getCurrentDate();
-        }
         if ($this->maxPageCount === 0) {
             return [
                 'rooms' => [],
@@ -140,6 +137,11 @@ class RoomSearch extends Room
 
         foreach ($roomsPlayers as $roomId => $roomPlayers) {
             $result[$roomId]['players'] = $roomPlayers;
+        }
+        foreach ($result as $roomId => $room) {
+            for ($i = 0; $i < 4; $i++) {
+                $result[$roomId]['player' . ($i + 1)] = $roomsPlayers[$roomId][$i] ?? '';
+            }
         }
 
         return [
