@@ -33,6 +33,8 @@ class BanController extends SiteController
             if ($model->type === BanType::BAN_TYPE_ALL) {
                 UserRoom::leaveAllRooms($model->id_user);
             }
+        } else {
+            Yii::$app->session->setFlash('error', 'An error has occurred while processing ban.');
         }
         return $this->redirect(Url::to('/user/management/profiles'));
     }

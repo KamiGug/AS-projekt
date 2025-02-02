@@ -10,8 +10,8 @@ $model = new Ban;
 
 $(document).ready(() => {
     const banForm = (id) => {
-        return `<div id="ban-form-wrapper">
-    <div id="ban-form">
+        return `<div id="ban-form-wrapper" class="floating-form-wrapper">
+    <div id="ban-form" class="floating-form">
         <h3>Ban User</h3>
         <?php $form = ActiveForm::begin([
             'action' => ['/user/ban/ban'],
@@ -31,18 +31,18 @@ $(document).ready(() => {
                 ]
             ) ?>
             <div class="form-group">
-                <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => 'btn btn-success']) ?>
+                <?= Html::submitButton('Create', ['class' => 'btn btn-success']) ?>
             </div>
         <?php ActiveForm::end(); ?>
     </div>
 </div>`
     }
 
-    const viewForm = (id) => {
+    const viewBanForm = (id) => {
         $('body').append(banForm(id));
     }
 
-    const hideForm = () => {
+    const hideBanForm = () => {
         $('#ban-form-wrapper').remove();
     }
 
@@ -51,12 +51,12 @@ $(document).ready(() => {
     });
 
     $(document).on('click', '#close-ban-form', function() {
-        hideForm();
+        hideBanForm();
         event.stopPropagation();
     });
 
     $(document).on('click', '#ban-form-wrapper', function() {
-        hideForm();
+        hideBanForm();
         event.stopPropagation();
     });
 
@@ -65,7 +65,7 @@ $(document).ready(() => {
         const params = new URL(event.currentTarget.href).searchParams;
         const id = params.get("id");
         console.log('Opening Ban Form for ID:', id);
-        viewForm(id);
+        viewBanForm(id);
     });
 
     $(document).on('submit', '#ajax-ban-form', function(event) {
@@ -77,11 +77,7 @@ $(document).ready(() => {
             data: formData,
             dataType: "json",
             success: function(response) {
-                if (response.success) {
-                    setTimeout(hideForm, 2000);
-                } else {
-                    $('#ban-message').html('<p style="color: red;">' + response.message + '</p>');
-                }
+                setTimeout(hideBanForm, 2000);
             },
             error: function() {
             }

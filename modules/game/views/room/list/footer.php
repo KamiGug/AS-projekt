@@ -6,9 +6,7 @@ use app\modules\game\models\RoomList;
 /** @var string $type */
 
 ?>
-<div id="room-list-footer">
-    I AM PAGINATION!!!
-</div>
+<ul id="room-list-footer" class="pagination pagination-sm"></ul>
 
 
 

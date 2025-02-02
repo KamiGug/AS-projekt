@@ -4,6 +4,7 @@
 
 use app\modules\game\models\GameTypes;
 use app\modules\game\models\RoomSearch;
+use app\modules\game\widgets\newRoom\NewRoomWidget;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -56,6 +57,7 @@ $model = new RoomSearch;
         <div class="form-group col-md-2 d-flex justify-content-around">
             <?= Html::submitButton('<img style="height: 16px; width: 16px;" src="/icons/magnifying-glass-white.svg" alt="search">', ['class' => 'btn btn-primary', 'id' => 'room-search-btn']) ?>
             <?= Html::button('<img style="height: 16px; width: 16px;" src="/icons/refresh-white.svg" alt="refresh">', ['class' => 'btn btn-primary', 'id' => 'room-search-refresh-btn']) ?>
+            <?= Html::button('<img style="height: 16px; width: 16px;" src="/icons/plus-white.svg" alt="new">', ['class' => 'btn btn-primary', 'id' => 'new-room-btn']) ?>
         </div>
 
     </div>

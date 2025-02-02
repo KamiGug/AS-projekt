@@ -121,13 +121,13 @@ a.desc:after {
     color: #007bff;
 }
 
-.pagination .active a {
+.pagination .active * {
     background-color: #007bff;
     color: white;
     border-color: #007bff;
 }
 
-.pagination .disabled a {
+.pagination .disabled * {
     background-color: #f8f9fa;
     color: #bbb;
     border-color: #ddd;
@@ -137,20 +137,20 @@ a.desc:after {
     flex-shrink: 0;
 }
 
- #ban-form-wrapper {
-     position: fixed;
-     top: 0;
-     left: 0;
-     width: 100%;
-     height: 100%;
-     background-color: rgba(0, 0, 0, 0.6);
-     display: flex;
-     justify-content: center;
-     align-items: center;
-     z-index: 9999;
- }
+.floating-form-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
 
-#ban-form {
+.floating-form {
     background-color: #fff;
     padding: 30px;
     border-radius: 8px;
@@ -160,7 +160,7 @@ a.desc:after {
     box-sizing: border-box;
 }
 
-#ban-form h3 {
+.floating-form>h3 {
     text-align: center;
     margin-bottom: 20px;
     font-size: 1.5rem;
@@ -183,4 +183,33 @@ a.desc:after {
 
 .btn-success:hover {
     background-color: #218838;
+}
+
+div.player-element::before {
+    content: "";
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: 2px;
+    vertical-align: middle;
+}
+
+div.blue-player-element::before {
+    background-color: blue;
+}
+
+div.red-player-element::before {
+    background-color: red;
+}
+
+div.green-player-element::before {
+    background-color: green;
+}
+
+div.yellow-player-element::before {
+    background-color: yellow;
+}
+
+.list-item-players {
+    margin: 0;
 }
