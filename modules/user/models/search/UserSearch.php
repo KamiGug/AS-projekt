@@ -38,10 +38,10 @@ class UserSearch extends User
         if ($this->role != null && array_key_exists($this->role, Role::getRoles())) {
             $query = $query->andWhere(['=', 'role', $this->role]);
         }
-        if ($this->created_at_start != null && DBDate::validateDate($this->created_at_start)) {
+        if ($this->created_at_start != null) { //&& DBDate::validateDate($this->created_at_start)
             $query = $query->andWhere(['>=', 'created_at', $this->created_at_start]);
         }
-        if ($this->created_at_end != null && DBDate::validateDate($this->created_at_end)) {
+        if ($this->created_at_end != null) { // && DBDate::validateDate($this->created_at_end)
             $query = $query->andWhere(['<=', 'created_at', $this->created_at_end]);
         }
         return new ActiveDataProvider([
