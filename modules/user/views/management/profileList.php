@@ -72,18 +72,19 @@ $otherColumns = [
         <div class="col-md-2">
             <?= $form->field($searchModel, 'created_at_start')->input('date', [
                 'placeholder' => 'Start date',
-            ])->label('Created At (Start)') ?>
+            ])->label('Created After') ?>
         </div>
         <div class="col-md-2">
             <?= $form->field($searchModel, 'created_at_end')->input('date', [
                 'placeholder' => 'End date',
-            ])->label('Created At (End)') ?>
+            ])->label('Created Before') ?>
         </div>
     </div>
     <div class="row d-flex justify-content-around align-items-center flex-row">
         <div class="col-md-2">
             <label for="count"><?= Yii::t('app', 'Items Per Page') ?></label>
             <?= Html::dropDownList('count', $countPerPage, [
+                5 => '5',
                 10 => '10',
                 20 => '20',
                 50 => '50',

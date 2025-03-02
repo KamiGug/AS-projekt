@@ -5,7 +5,6 @@ use app\modules\user\models\search\BanActionColumn;
 use app\modules\user\models\search\UserSearch;
 use yii\data\ActiveDataProvider;
 use yii\grid\GridView;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\ActiveForm;
@@ -40,7 +39,7 @@ use yii\widgets\ActiveForm;
 
         <div class="col-md-2">
             <?= $form->field($searchModel, 'searchedType')->dropDownList(
-                ArrayHelper::map(BanType::getBanTypes(), function ($key) { return $key; }, function ($value) { return $value; }),
+                BanType::getBanTypes(),
                 ['prompt' => 'Select Type']
             ) ?>
         </div>
@@ -91,9 +90,9 @@ use yii\widgets\ActiveForm;
 <?= GridView::widget([
     'dataProvider' => $list,
     'columns' => [
-//        ['class' => 'yii\grid\SerialColumn'],
+        //        ['class' => 'yii\grid\SerialColumn'],
         'id',
-        'banned_visible_name' ,
+        'banned_visible_name',
         'type',
         'since',
         'until',

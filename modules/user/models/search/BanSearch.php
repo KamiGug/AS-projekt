@@ -63,11 +63,11 @@ class BanSearch extends Ban
         }
 
         if ($this->issuedByNickname != null) {
-            $query->andWhere(['in', 'id_user', User::getIdsByVisibleNameLike(self::sanitizeCharacters($this->issuedByNickname))]);
+            $query->andWhere(['in', 'issued_by', User::getIdsByVisibleNameLike(self::sanitizeCharacters($this->issuedByNickname))]);
         }
 
         if ($this->searchedType != null && array_key_exists($this->searchedType, BanType::getBanTypes())) {
-            $query = $query->andWhere(['=', 'type', $this->type]);
+            $query = $query->andWhere(['=', 'type', $this->searchedType]);
         }
 
         if ($this->endedBefore != null) {

@@ -9,7 +9,7 @@ use app\modules\user\models\Authentication\Role;
 
 <?php if (
     !Yii::$app->user->isGuest
-    && Yii::$app->user->getIdentity()->role !== Role::ROLE_ADMINISTRATOR
+//    && Yii::$app->user->getIdentity()->role !== Role::ROLE_ADMINISTRATOR
 ) : ?>
     <?= GameWidget::widget([]); ?>
     <?= NewRoomWidget::widget(); ?>
