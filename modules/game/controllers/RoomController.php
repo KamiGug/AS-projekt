@@ -10,8 +10,6 @@ use app\models\exceptions\NoSuchRoomException;
 use app\models\exceptions\NotInTheChosenRoomException;
 use app\models\exceptions\PlayerNumberIsTakenException;
 use app\models\exceptions\UnknownPlayerException;
-use app\modules\game\models\base\BaseGameType;
-use app\modules\game\models\ludo\LudoGameType;
 use app\modules\game\models\GameTypes;
 use app\modules\game\models\Room;
 use app\modules\game\models\RoomList;
@@ -25,13 +23,13 @@ use yii\web\Response;
 
 class RoomController extends SiteController
 {
-//    protected $allUsersActions = ['list'];
+    //    protected $allUsersActions = ['list'];
 
-//    protected $guestActions = ['join'];
+    //    protected $guestActions = ['join'];
 
 
     protected $allowedRoles = [
-//        '@',
+        //        '@',
         Role::ROLE_ADMINISTRATOR,
         Role::ROLE_PLAYER,
         Role::ROLE_MODERATOR
@@ -45,10 +43,12 @@ class RoomController extends SiteController
         $type = RoomList::getType(json_decode($this->request->getRawBody())?->type);
 
         return json_encode([
-            'elementPartial' => $this->renderPartial('list/element',
+            'elementPartial' => $this->renderPartial(
+                'list/element',
                 ['type' => $type]
             ),
-            'listPartial' => $this->renderPartial('list/wrapper',
+            'listPartial' => $this->renderPartial(
+                'list/wrapper',
                 ['type' => $type]
             ),
             'listTemplate' => $this->renderPartial('list/template'),
@@ -69,7 +69,7 @@ class RoomController extends SiteController
         $model = new RoomSearch;
         $model->load($this->request->post());
         $count = $model->itemCount;
-        if ($count !== null && strlen( (string) $count)) {
+        if ($count !== null && strlen((string) $count)) {
             $count = (int) $count;
             if ($count < 1) {
                 $count = Room::ROOM_LIST_PAGE_DEFAULT_LENGTH;
@@ -111,7 +111,10 @@ class RoomController extends SiteController
         if ($room->validate() && $room->save()) {
             Yii::$app->session->setFlash('success', 'Successfully created a room');
         } else {
-            Yii::$app->session->setFlash('error', 'An error has occurred while creating a room.');
+            Yii::$app->response->statusCode = 500;
+            return json_encode([
+                'errors' => $room->getErrors(),
+            ]);
         }
         $room->join(Yii::$app->user->getId());
         return json_encode(['id' => $room->id]);
@@ -128,10 +131,10 @@ class RoomController extends SiteController
         if ($room->join(Yii::$app->user->getId()) === false) {
             throw new HttpException(500, 'Unable to join room');
         }
-//            if ($room->getPlayerCount() >= GameTypes::GAME_TYPE_MAP[$room->type]::maxPlayers) {
-//                throw new HttpException(403, 'This game has already a maximum number of players');
-//            }
-//        }
+        //            if ($room->getPlayerCount() >= GameTypes::GAME_TYPE_MAP[$room->type]::maxPlayers) {
+        //                throw new HttpException(403, 'This game has already a maximum number of players');
+        //            }
+        //        }
         return json_encode(['id' => $id]);
     }
 
@@ -208,13 +211,13 @@ class RoomController extends SiteController
                 $activePlayerNumbers,
                 $room
             );
-        } catch (\Throwable|\Exception $e) {
+        } catch (\Throwable | \Exception $e) {
             throw new NoSuchGameTypeException();
         }
 
         try {
             $model->handleMove($body['move']);
-        } catch (\Throwable|\Exception $e) {
+        } catch (\Throwable | \Exception $e) {
             throw $e;
         }
 
@@ -237,9 +240,9 @@ class RoomController extends SiteController
         if ($room === null) {
             throw new NoSuchRoomException($id);
         }
-//        if ($model->playerJoined(Yii::$app->user->getId()) === false) {
-//            throw new HttpException(403, 'Player has not joined this game!');
-//        }
+        //        if ($model->playerJoined(Yii::$app->user->getId()) === false) {
+        //            throw new HttpException(403, 'Player has not joined this game!');
+        //        }
 
         return json_encode([
             'board' => $this->renderAjax($room->game_type),
@@ -266,10 +269,10 @@ class RoomController extends SiteController
             throw new NoSuchRoomException($id);
         }
         /** @var Room $room */
-        if (isset($body['lastRefresh']) && $body['lastRefresh'] >= $room->modified_at) {
-            return json_encode([]);
-        }
 
+        //        if (isset($body['lastRefresh']) && $body['lastRefresh'] >= $room->modified_at) {
+        //            return json_encode([]);
+        //        }
 
         $userRoom = UserRoom::getSingleUserRoom(Yii::$app->user->getId(), $id, true);
         $activePlayerNumbers = UserRoom::getActivePlayerNumbers($id);
@@ -280,7 +283,7 @@ class RoomController extends SiteController
                 $activePlayerNumbers,
                 $room
             );
-        } catch (\Throwable|\Exception $e) {
+        } catch (\Throwable | \Exception $e) {
             throw new NoSuchGameTypeException();
         }
         return json_encode([
@@ -335,15 +338,15 @@ class RoomController extends SiteController
         //todo: add transaction over this to the end!
         $userRoom->updatePlayerNumber($playerNumber);
         $activePlayerNumbers = UserRoom::getActivePlayerNumbers($roomId);
-//        $userRoom->player_number = $playerNumber;
-//        $userRoom->save();
+        //        $userRoom->player_number = $playerNumber;
+        //        $userRoom->save();
         try {
             $model = new (GameTypes::GAME_TYPE_MAP[$room->game_type])(
                 $playerNumber,
                 $activePlayerNumbers,
                 $room
             );
-        } catch (\Throwable|\Exception $e) {
+        } catch (\Throwable | \Exception $e) {
             throw new NoSuchGameTypeException();
         }
         if ($playerNumber === UserRoom::SPECTATOR_NUMBER) {

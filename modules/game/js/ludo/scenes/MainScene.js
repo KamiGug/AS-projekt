@@ -43,8 +43,8 @@ class MainScene extends BaseScene {
             this.sys.cameras.main.width / 2,
             this.sys.cameras.main.height / 2,
         )
-        this.dice = new Dice(this, boardCenter * 3, boardCenter)
         this.sidebar = new Sidebar(this)
+        this.dice = new Dice(this, boardCenter * 3, boardCenter)
         this.board = new Board(this, boardCenter, boardCenter)
         this.dice.handleVisibility();
         // this.children.bringToTop(this.dice);

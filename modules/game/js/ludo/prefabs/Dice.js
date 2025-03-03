@@ -7,11 +7,11 @@ class Dice extends Phaser.GameObjects.Sprite {
         super(scene, x, y, 'dice');
         this.roll(true, false);
         scene.add.existing(this);
+        this.setRandomPosition();
         this.setInteractive();
         this.resetForcedResults();
         this.diceTrayDeadZone = 57 * 0.5;
-        // this.handleVisibility(false);
-
+        this.handleVisibility(false);
 
         this.on('pointerup', () => {
             if (this.roll() !== false) {
@@ -73,14 +73,15 @@ class Dice extends Phaser.GameObjects.Sprite {
         if (
             this.forcedDiceRolls.length === gameVars.moveList?.diceRolls?.length
             && this.forcedDiceRolls.every((diceRoll, i) => {
-                    return diceRoll === gameVars.moveList?.diceRolls[i];
-                })
-        ) {
+                return diceRoll === gameVars.moveList?.diceRolls[i];
+            })
+        ) { 
             return;
         }
         this.forcedResultIterator = 0;
         this.forcedDiceRolls = gameVars.moveList?.diceRolls ?? [];
         this.forcedResult = null;
+        this.handleVisibility(false);
         if (this.forcedDiceRolls.length > 0) {
             this.visible = true;
         }
@@ -102,5 +103,11 @@ class Dice extends Phaser.GameObjects.Sprite {
             this.y = position.y;
         }
         this.scene.children.bringToTop(this);
+    }
+
+    setRandomPosition () {
+        const position = this.scene.sidebar.diceTray.getRandomPositionInside(this.diceTrayDeadZone);
+        this.x = position.x;
+        this.y = position.y;
     }
 }
