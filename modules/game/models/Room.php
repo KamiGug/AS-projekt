@@ -1,7 +1,7 @@
 <?php
 
 namespace app\modules\game\models;
-use app\models\DBDate;
+
 use \app\models\generated\Room as Base;
 use app\modules\user\models\User;
 use Yii;
@@ -32,15 +32,17 @@ class Room extends Base
                 ['game_type', 'in', 'range' => array_keys(GameTypes::GAME_TYPE_MAP)],
                 ['name', 'string', 'min' => 3],
                 [['name', 'game_type'], 'safe'],
-//                ['email', 'email', 'message' => Yii::t('app', 'Invalid email')],
-//                [
-//                    'password',
-//                    'compare',
-//                    'compareAttribute' => 'confirmPassword',
-//                    'on' => self::SCENARIO_SIGNUP,
-//                    'message' => \Yii::t('app', 'Passwords must match'),
-//                ],
-//                [['confirmPassword'], 'required', 'on' => self::SCENARIO_SIGNUP],
+                [['game_type', 'name'], 'required'],
+                ['name', 'unique'],
+                //                ['email', 'email', 'message' => Yii::t('app', 'Invalid email')],
+                //                [
+                //                    'password',
+                //                    'compare',
+                //                    'compareAttribute' => 'confirmPassword',
+                //                    'on' => self::SCENARIO_SIGNUP,
+                //                    'message' => \Yii::t('app', 'Passwords must match'),
+                //                ],
+                //                [['confirmPassword'], 'required', 'on' => self::SCENARIO_SIGNUP],
             ]
         );
     }
@@ -51,19 +53,19 @@ class Room extends Base
             parent::scenarios(),
             [
                 self::SCENARIO_CREATE => ['name', 'game_type']
-//                self::SCENARIO_LOGIN => ['username', 'password'],
-//                self::SCENARIO_SIGNUP => [
-//                    'id',
-//                    'username',
-//                    'password',
-//                    'confirmPassword',
-//                    'email',
-//                    'visible_name',
-//                    'role'
-//                ],
-//                self::SCENARIO_EDIT_SELF => ['username', 'password', 'visible_name'],
-//                self::SCENARIO_EDIT_ADMIN => ['username', 'password', 'email', 'visible_name', 'role'],
-//                self::SCENARIO_PROFILE_SHOW => ['visible_name'],
+                //                self::SCENARIO_LOGIN => ['username', 'password'],
+                //                self::SCENARIO_SIGNUP => [
+                //                    'id',
+                //                    'username',
+                //                    'password',
+                //                    'confirmPassword',
+                //                    'email',
+                //                    'visible_name',
+                //                    'role'
+                //                ],
+                //                self::SCENARIO_EDIT_SELF => ['username', 'password', 'visible_name'],
+                //                self::SCENARIO_EDIT_ADMIN => ['username', 'password', 'email', 'visible_name', 'role'],
+                //                self::SCENARIO_PROFILE_SHOW => ['visible_name'],
             ]
         );
     }
@@ -87,28 +89,29 @@ class Room extends Base
      * @throws HttpException
      */
 
-    public function playerJoined($userId) : bool
+    public function playerJoined($userId): bool
     {
         return UserRoom::playerJoinedRoom($userId, $this->id);
     }
 
-    public static function getById($roomId) : ActiveRecord|null
+    public static function getById($roomId): ActiveRecord|null
     {
         $room = null;
         try {
             $room = Room::find()
                 ->where(['id' => $roomId])
                 ->one();
-        } catch (\Throwable|\Exception $e) { }
+        } catch (\Throwable | \Exception $e) {
+        }
         return $room;
     }
 
-    public function getPlayerCount() : int
+    public function getPlayerCount(): int
     {
         return UserRoom::getCountByRoomId($this->id, false);
     }
 
-    public function join($userId) : bool
+    public function join($userId): bool
     {
         if ($this->playerJoined($userId)) {
             return true;
