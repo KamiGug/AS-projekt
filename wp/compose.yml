@@ -1,0 +1,27 @@
+services:
+  wordpress:
+    image: wordpress
+    restart: always
+    ports:
+      - 9999:80
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wordpresser
+      WORDPRESS_DB_PASSWORD: pass
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - type: bind
+        source: ./wp-content
+        target: /var/www/html/
+  db:
+    image: mariadb:11
+    restart: always
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpresser
+      MYSQL_PASSWORD: pass
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - type: bind
+        source: ./db
+        target: /var/lib/mysql
