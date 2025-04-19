@@ -21,6 +21,8 @@ services:
       MYSQL_USER: wordpresser
       MYSQL_PASSWORD: pass
       MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    ports:
+      - 3306:3306
     volumes:
       - type: bind
         source: ./db
