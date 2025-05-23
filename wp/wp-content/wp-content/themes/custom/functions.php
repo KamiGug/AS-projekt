@@ -71,16 +71,16 @@ function custom_setup() {
 	);
 
 	// Set up the WordPress core custom background feature.
-	add_theme_support(
-		'custom-background',
-		apply_filters(
-			'custom_custom_background_args',
-			array(
-				'default-color' => 'ffffff',
-				'default-image' => '',
-			)
-		)
-	);
+//	add_theme_support(
+//		'custom-background',
+//		apply_filters(
+//			'custom_custom_background_args',
+//			array(
+//				'default-color' => 'ffffff',
+//				'default-image' => '',
+//			)
+//		)
+//	);
 
 	// Add theme support for selective refresh for widgets.
 	add_theme_support( 'customize-selective-refresh-widgets' );
@@ -139,6 +139,8 @@ add_action( 'widgets_init', 'custom_widgets_init' );
  */
 function custom_scripts() {
 	wp_enqueue_style( 'custom-style', get_stylesheet_uri(), array(), _S_VERSION );
+
+
 	wp_style_add_data( 'custom-style', 'rtl', 'replace' );
 
 	wp_enqueue_script( 'custom-navigation', get_template_directory_uri() . '/js/navigation.js', array(), _S_VERSION, true );

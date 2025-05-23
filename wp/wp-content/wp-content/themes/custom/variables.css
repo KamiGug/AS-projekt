@@ -1,0 +1,15 @@
+:root {
+    --primary-color: #258159;
+    --secondary-color: #49a30d;
+    --tertiary-color: #6EF9F5;
+    --accent-1-color: #FCEADE;
+    --accent-2-color: #FF8A5B;
+    --selected-primary-color: #1e5c42;
+    --selected-secondary-color: #408516;
+    --menu-font-color: #fff;
+    --font-color: #000;
+    --font-clickable-color: #00133c;
+    --font-clickable-on-hover-color: #001b7a;
+    --border-color: #b7c3b7;
+    --background-color: #ececec;
+}

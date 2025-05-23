@@ -12,6 +12,7 @@
 ?>
 
 	<footer id="colophon" class="site-footer">
+        <hr class="hr-separator">
 		<div class="site-info">
 			<a href="<?php echo esc_url( __( 'https://wordpress.org/', 'custom' ) ); ?>">
 				<?php
@@ -24,6 +25,16 @@
 				/* translators: 1: Theme name, 2: Theme author. */
 				printf( esc_html__( 'Theme: %1$s by %2$s.', 'custom' ), 'custom', '<a href="http://underscores.me/">Underscores.me</a>' );
 				?>
+            <hr class="hr-separator">
+            <?php
+                $tagline = get_bloginfo('description');
+                if ($tagline) : ?>
+                    <div id="tagline">
+                        <?= $tagline ?>
+                    </div>
+                    <hr class="hr-separator">
+            <?php endif; ?>
+            <div></div>
 		</div><!-- .site-info -->
 	</footer><!-- #colophon -->
 </div><!-- #page -->

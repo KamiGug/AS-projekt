@@ -1,0 +1,77 @@
+*, *:before, *:after {
+    color: var(--font-color, hotpink);
+}
+
+#primary-menu {
+    background-color: var(--secondary-color, hotpink);
+    padding: 0 max(10%, 10px);
+}
+
+#primary-menu>li {
+    display: inline-block;
+    padding: 10px 15px;
+
+    /*background-color: var(--secondary-color, hotpink);*/
+    text-decoration: none;
+    a {
+        color: var(--menu-font-color, hotpink);
+    }
+    &:hover, &:active, &.current_page_item {
+        background-color: var(--selected-secondary-color, hotpink);
+    }
+    &.current_page_item {
+        font-weight: bold;
+    }
+}
+
+a,a:visited {
+    color: var(--font-clickable-color, hotpink);
+    text-decoration: none;
+    &:hover {
+        color: var(--font-clickable-on-hover-color, hotpink);
+    }
+}
+
+
+
+#content-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    gap: 15px;
+}
+
+main {
+    width: 60%;
+    /*flex-grow: 1;*/
+}
+
+aside {
+    width: max(20%, 300px);
+    padding-top: 1rem;
+    /*flex-grow: 0;*/
+}
+
+.site {
+    background-color: var(--background-color, hotpink);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    &>* {
+        padding: 0 max(10%, 10px);
+    }
+}
+
+header#masthead {
+    padding: 0 0;
+}
+
+footer {
+    padding-bottom: 1rem;
+}
+
+body, body:before, body:after, html, html:before, html:after {
+    margin: 0 !important;
+    padding: 0 !important;
+}
