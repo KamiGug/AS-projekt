@@ -2,31 +2,50 @@
     color: var(--font-color, hotpink);
 }
 
-#primary-menu {
-    background-color: var(--secondary-color, hotpink);
+#primary-menu, #logo-row {
     padding: 0 max(10%, 10px);
 }
 
-#primary-menu>li {
-    display: inline-block;
-    padding: 10px 15px;
+#primary-menu {
+    background-color: var(--secondary-color, hotpink);
 
-    /*background-color: var(--secondary-color, hotpink);*/
-    text-decoration: none;
-    a {
-        color: var(--menu-font-color, hotpink);
+    & > li {
+        display: inline-block;
+        padding: 10px 15px;
+        text-decoration: none;
+
+
+        a {
+            color: var(--menu-font-color, hotpink);
+            font-style: normal;
+        }
+
+        &:hover, &:active, &.current_page_item {
+            background-color: var(--selected-secondary-color, hotpink);
+        }
+
+        &.current_page_item {
+            font-weight: bold;
+        }
     }
-    &:hover, &:active, &.current_page_item {
-        background-color: var(--selected-secondary-color, hotpink);
-    }
-    &.current_page_item {
-        font-weight: bold;
-    }
+}
+
+#logo-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    background-color: var(--primary-color, hotpink);
+}
+
+#logo-wrapper {
+    max-width: 300px;
 }
 
 a,a:visited {
     color: var(--font-clickable-color, hotpink);
     text-decoration: none;
+    font-style: italic;
     &:hover {
         color: var(--font-clickable-on-hover-color, hotpink);
     }
@@ -74,4 +93,14 @@ footer {
 body, body:before, body:after, html, html:before, html:after {
     margin: 0 !important;
     padding: 0 !important;
+}
+
+.post-edit-link:before {
+    content: '\a';
+    white-space: pre;
+}
+
+.logged-in-as {
+    display: flex;
+    flex-direction: column;
 }

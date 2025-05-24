@@ -16,7 +16,6 @@ get_header();
 ?>
     <div id="content-wrapper">
         <main id="primary" class="site-main">
-
             <?php
             if ( have_posts() ) :
 

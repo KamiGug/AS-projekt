@@ -4,6 +4,7 @@ services:
     restart: always
     ports:
       - 9999:80
+    user: ${CURRENT_USER_UID:-1000}
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_USER: wordpresser
@@ -14,8 +15,9 @@ services:
         source: ./wp-content
         target: /var/www/html/
   db:
-    image: mariadb:11
+    image: mariadb:10
     restart: always
+    user: ${CURRENT_USER_UID:-1000}
     environment:
       MYSQL_DATABASE: wordpress
       MYSQL_USER: wordpresser

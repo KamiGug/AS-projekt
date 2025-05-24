@@ -27,9 +27,18 @@
 
 	<header id="masthead" class="site-header">
 		<div class="site-branding">
-			<?php
-            
-
+			<?php if (has_custom_logo()): ?>
+                <div id="logo-row">
+                    <div id="logo-wrapper">
+                        <?php the_custom_logo(); ?>
+                    </div>
+                    <div id="logo-searchbar">
+                        <?= get_search_form() ?>
+                        <?php //TODO: add search bar! ?>
+                    </div>
+                </div>
+            <?php endif; ?>
+            <?php
 			if ( is_front_page() && is_home() ) :
 				?>
 				<h1 class="site-title"><a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a></h1>
